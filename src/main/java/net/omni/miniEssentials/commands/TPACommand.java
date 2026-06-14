@@ -2,7 +2,6 @@ package net.omni.miniEssentials.commands;
 
 import net.omni.miniEssentials.MiniEssentials;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -81,14 +80,10 @@ public class TPACommand implements CommandExecutor {
                 return true;
             }
 
-            String res = "<red>Something went wrong. Please try again</red>";
-
             if (args[0].equalsIgnoreCase("accept"))
-                res = plugin.getTPAManager().acceptTPA(player.getUniqueId(), target.getUniqueId());
+                plugin.getTPAManager().acceptTPA(target.getUniqueId(), player.getUniqueId());
             else if (args[0].equalsIgnoreCase("deny"))
-                res = plugin.getTPAManager().denyTPA(player.getUniqueId(), target.getUniqueId());
-
-            plugin.sendMessage(sender, res);
+                plugin.getTPAManager().denyTPA(target.getUniqueId(), player.getUniqueId());
 
             return true;
         } else {

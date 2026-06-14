@@ -30,15 +30,20 @@ public class TPAManager {
         if (player == null)
             return;
 
-        Player targetPlayer = Bukkit.getPlayer(fromPlayer);
+        Player targetPlayer = Bukkit.getPlayer(toPlayer);
 
         if (targetPlayer == null)
             return;
 
+        if (fromPlayer.equals(toPlayer)) {
+            plugin.sendMessage(player, "<red>You cannot use this on yourself.</red>");
+            return;
+        }
+
         if (hasTPA(fromPlayer, toPlayer) && tpaCooldowns.containsKey(fromPlayer)) {
             long timeLeft = (tpaCooldowns.get(fromPlayer) - System.currentTimeMillis()) / 1000;
 
-            if (timeLeft < 0) timeLeft = 1;
+            if (timeLeft <= 0) timeLeft = 1;
 
             String cd = timeLeft > 1 ? timeLeft + " seconds" : timeLeft + " second";
 
@@ -55,9 +60,16 @@ public class TPAManager {
                 
                 """;
 
+        // TODO messages.yml -> use placeholder: 'from_player'. then, make run_command editable as wel as the hover text + main text (accept/deny)
+
         Component text = MessageUtil.parse(miniMessageString, Placeholder.parsed("from_player", player.getName()));
 
-        player.sendMessage(text);
+        targetPlayer.sendMessage(text);
+
+        // TODO messages.yml
+        plugin.sendMessage(player,
+                "<yellow>You have sent <to_player> a TPA request.</yellow>",
+                Placeholder.parsed("to_player", targetPlayer.getName()));
 
         tpaTasks.put(fromPlayer, Bukkit.getScheduler().runTaskLater(plugin, () -> {
             Set<UUID> requests = getTPARequests(toPlayer);
@@ -73,14 +85,13 @@ public class TPAManager {
                 plugin.sendMessage(player, "<red>Your TPA request to " + targetPlayer.getName() + " has expired.</red>");
         }, 20 * 30)); // TODO config - default: 30 seconds
 
-        tpaCooldowns.put(fromPlayer, System.currentTimeMillis() + 60 * 100 * 1000);
+        tpaCooldowns.put(fromPlayer, System.currentTimeMillis() + (30 * 1000)); // TODO config
 
         tpaRequests.compute(toPlayer, (_, requests) -> {
             if (requests == null)
                 requests = new HashSet<>();
 
             requests.add(fromPlayer);
-
             return requests;
         });
     }
@@ -97,28 +108,30 @@ public class TPAManager {
         return tpaRequests.containsKey(player) || tpaRequests.values().stream().anyMatch(set -> set.contains(player));
     }
 
-    public String acceptTPA(UUID fromPlayer, UUID toPlayer) {
+    public void acceptTPA(UUID fromPlayer, UUID toPlayer) {
         // used /tpaccept <player>
 
         Player player = Bukkit.getPlayer(fromPlayer);
 
         if (player == null)
-            return "<red>Something went wrong. Please try again.</red>";
+            return;
 
-        Player targetPlayer = Bukkit.getPlayer(fromPlayer);
+        Player targetPlayer = Bukkit.getPlayer(toPlayer);
 
         if (targetPlayer == null)
-            return "<red>Something went wrong. Please try again.</red>";
+            return;
 
-        if (!hasTPA(fromPlayer, toPlayer))
-            return "<red>Could not find your TPA request. Please try again.</red>";
+        if (!hasTPA(fromPlayer, toPlayer)) {
+            plugin.sendMessage(targetPlayer, "<red>Could not find your TPA request. Please try again.</red>");
+            return;
+        }
 
         player.teleport(targetPlayer.getLocation());
 
         removeRequestFromPlayer(fromPlayer, toPlayer);
 
         // TODO messages.yml
-        return "<yellow>You have teleported to " + targetPlayer.getName() + "'s location.";
+        plugin.sendMessage(player, "<yellow>You have teleported to " + targetPlayer.getName() + "'s location.");
     }
 
     public void removeRequestFromPlayer(UUID player, UUID toPlayer) {
@@ -132,26 +145,28 @@ public class TPAManager {
         tpaRequests.get(toPlayer).remove(player);
     }
 
-    public String denyTPA(UUID fromPlayer, UUID toPlayer) {
+    public void denyTPA(UUID fromPlayer, UUID toPlayer) {
         // used /tpa deny <player>
 
         Player player = Bukkit.getPlayer(fromPlayer);
 
         if (player == null)
-            return "<red>Something went wrong. Please try again.</red>";
+            return;
 
-        Player targetPlayer = Bukkit.getPlayer(fromPlayer);
+        Player targetPlayer = Bukkit.getPlayer(toPlayer);
 
         if (targetPlayer == null)
-            return "<red>Something went wrong. Please try again.</red>";
+            return;
 
-        if (!hasTPA(fromPlayer, toPlayer))
-            return "<red>Could not find your TPA request. Please try again.</red>";
+        if (!hasTPA(fromPlayer, toPlayer)) {
+            plugin.sendMessage(targetPlayer, "<red>Could not find your TPA request. Please try again.</red>");
+            return;
+        }
 
         removeRequestFromPlayer(fromPlayer, toPlayer);
 
         // TODO messages.yml
-        return "<red>Your TPA request to " + targetPlayer.getName() + " was denied.</red>";
+        plugin.sendMessage(player, "<red>Your TPA request to " + targetPlayer.getName() + " was denied.</red>");
     }
 
     public void removeRequests(UUID player) {
