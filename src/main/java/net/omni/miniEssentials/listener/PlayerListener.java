@@ -73,6 +73,10 @@ public class PlayerListener implements Listener {
             amount += item.getAmount();
         }
 
+        // ignore
+        if (amount == 0)
+            return;
+
         // TODO messages.yml
         plugin.sendMessage(player, "<green>Successfully trashed <amount> item(s).</green>",
                 Placeholder.parsed("amount", amount + ""));

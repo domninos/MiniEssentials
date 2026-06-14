@@ -57,7 +57,7 @@ public class TPAManager {
 
         Component text = MessageUtil.parse(miniMessageString, Placeholder.parsed("from_player", player.getName()));
 
-        targetPlayer.sendMessage(text);
+        player.sendMessage(text);
 
         tpaTasks.put(fromPlayer, Bukkit.getScheduler().runTaskLater(plugin, () -> {
             Set<UUID> requests = getTPARequests(toPlayer);
