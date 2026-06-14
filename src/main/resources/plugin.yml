@@ -12,6 +12,7 @@ commands:
   miniessentials:
     usage: /<minie>
     description: Base command for MiniEssentials.
+    permission: miniessentials.use
     aliases: [minie]
   enderchest:
     usage: /<command> [player]

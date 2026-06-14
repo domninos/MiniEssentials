@@ -2,7 +2,6 @@ package net.omni.miniEssentials.commands;
 
 import net.omni.miniEssentials.MiniEssentials;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,19 +33,14 @@ public class OpenInvCommand implements CommandExecutor {
             return true;
         }
 
-        OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
+        Player target = Bukkit.getPlayerExact(args[0]);
 
-        if (target.getPlayer() == null || !target.hasPlayedBefore()) {
+        if (target == null || target.getPlayer() == null || !target.hasPlayedBefore() || !target.isOnline()) {
             plugin.sendMessage(sender, "<red>Player " + args[0] + " is not online.</red>");
             return true;
         }
 
-        player.openInventory(target.getPlayer().getInventory());
-
-        // TODO handle inventory changing
-        // TODO TEST
-
-
+        plugin.getInventoryEditManager().openInv(player, target.getPlayer());
         return true;
     }
 

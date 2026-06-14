@@ -2,8 +2,10 @@ package net.omni.miniEssentials;
 
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.omni.miniEssentials.commands.*;
+import net.omni.miniEssentials.listener.OpenInvListener;
 import net.omni.miniEssentials.listener.PlayerListener;
 import net.omni.miniEssentials.managers.GodManager;
+import net.omni.miniEssentials.managers.InventoryEditManager;
 import net.omni.miniEssentials.managers.TPAManager;
 import net.omni.miniEssentials.managers.TrashManager;
 import net.omni.miniEssentials.util.MessageUtil;
@@ -19,12 +21,14 @@ public final class MiniEssentials extends JavaPlugin {
     private GodManager godManager;
     private TPAManager tpaManager;
     private TrashManager trashManager;
+    private InventoryEditManager inventoryEditManager;
 
     @Override
     public void onDisable() {
         godManager.flush();
         tpaManager.flush();
         trashManager.flush();
+        inventoryEditManager.flush();
 
         sendConsole("<red>MiniEssentials is now disabled.</red>");
     }
@@ -34,6 +38,7 @@ public final class MiniEssentials extends JavaPlugin {
         this.godManager = new GodManager(this);
         this.tpaManager = new TPAManager(this);
         this.trashManager = new TrashManager();
+        this.inventoryEditManager = new InventoryEditManager();
 
         trashManager.loadTrashInventory();
 
@@ -58,6 +63,7 @@ public final class MiniEssentials extends JavaPlugin {
 
     private void registerListeners() {
         new PlayerListener(this).register();
+        new OpenInvListener(this).register();
     }
 
     public void sendConsole(String message) {
@@ -86,5 +92,9 @@ public final class MiniEssentials extends JavaPlugin {
 
     public TrashManager getTrashManager() {
         return trashManager;
+    }
+
+    public InventoryEditManager getInventoryEditManager() {
+        return inventoryEditManager;
     }
 }
