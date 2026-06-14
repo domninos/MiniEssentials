@@ -9,9 +9,10 @@ load: POSTWORLD
 authors: [ domninos ]
 
 commands:
-  minie:
+  miniessentials:
     usage: /<minie>
     description: Base command for MiniEssentials.
+    aliases: [minie]
   enderchest:
     usage: /<command> [player]
     description: Opens your enderchest or someone else's.

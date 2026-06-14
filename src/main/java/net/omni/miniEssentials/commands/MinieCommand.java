@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MinieCommand implements CommandExecutor {
+    private static final int COMMANDS_PER_PAGE = 4;
     private final MiniEssentials plugin;
 
     public MinieCommand(MiniEssentials plugin) {
@@ -25,9 +26,9 @@ public class MinieCommand implements CommandExecutor {
             return true;
         }
 
+        // send help
         if (args.length == 0) {
-            // send help
-            sender.sendMessage(MessageUtil.parse(getHelpText(sender)));
+            sendHelpPage(sender, 1);
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("reload")) {
@@ -43,10 +44,26 @@ public class MinieCommand implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("about"))
                 sender.sendMessage(MessageUtil.parse(getAboutText()));
             else if (args[0].equalsIgnoreCase("help"))
-                plugin.sendMessage(sender, getHelpText(sender));
+                sendHelpPage(sender, 1);
             else
                 plugin.sendMessage(sender, "<red>Unknown command.</red>");
 
+            return true;
+        } else if (args.length == 2) {
+            if (!(args[0].equalsIgnoreCase("help"))) {
+                plugin.sendMessage(sender, "<red>Unknown command.</red>");
+                return true;
+            }
+
+            int page = 1;
+
+            try {
+                page = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                plugin.sendMessage(sender, "<red>Invalid page number. Defaulting to page 1.");
+            }
+
+            sendHelpPage(sender, page);
             return true;
         }
 
@@ -54,49 +71,43 @@ public class MinieCommand implements CommandExecutor {
         return true;
     }
 
-    private @NonNull String getHelpText(CommandSender sender) {
+    private void sendHelpPage(CommandSender sender, int page) {
+        List<String> lines = getAccessibleHelpLines(sender);
+
+        int totalPages = (int) Math.ceil((double) lines.size() / COMMANDS_PER_PAGE);
+        if (totalPages == 0) totalPages = 1;
+
+        if (page < 1) page = 1;
+        if (page > totalPages) page = totalPages;
+
+        int startIdx = (page - 1) * COMMANDS_PER_PAGE;
+        int endIdx = Math.min(startIdx + COMMANDS_PER_PAGE, lines.size());
+
         StringBuilder helpBuilder = new StringBuilder();
 
         helpBuilder.append("<dark_gray>▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪</dark_gray>\n");
-        helpBuilder.append("  <gradient:#ffaa00:#fdb813><bold>MiniEssentials</bold></gradient> <gray>• Help</gray>\n\n");
+        helpBuilder.append("  <gradient:#00AAFF:#55FFFF><bold>MiniEssentials</bold></gradient> <gray>• Help(")
+                .append(page).append("/").append(totalPages).append(")</gray>\n\n");
 
-        if (sender.hasPermission("miniessentials.use")) {
-            MessageUtil.append("minie", "Base command for MiniEssentials.", helpBuilder);
-            MessageUtil.append("minie help", "Shows this help menu.", helpBuilder);
+        if (lines.isEmpty())
+            helpBuilder.append("  <red>You do not have access to any commands.</red>\n");
+        else
+            for (int i = startIdx; i < endIdx; i++)
+                helpBuilder.append(lines.get(i));
 
-            if (sender.hasPermission("miniessentials.reload"))
-                MessageUtil.append("minie reload", "Reloads config and messages.", helpBuilder);
+        helpBuilder.append("<dark_gray>▪▪▪▪▪▪▪▪ </dark_gray>");
 
-            MessageUtil.append("minie about", "Shows basic information about this plugin.", helpBuilder);
+        if (page > 1) {
+            helpBuilder.append("<click:run_command:/minie help ").append(page - 1)
+                    .append("><hover:show_text:'<gray>Click for page ").append(page - 1)
+                    .append("'><aqua><bold>[◀ Previous]</bold></aqua></hover></click>");
+        } else {
+            helpBuilder.append("<gray>[◀ Previous]</gray>");
         }
 
-        if (sender.hasPermission("miniessentials.echest"))
-            MessageUtil.appendWithAliases("enderchest [player]", "Opens your enderchest or someone else's.", helpBuilder, "echest", "ec");
+        helpBuilder.append("<dark_gray>▪▪▪▪▪▪▪▪ </dark_gray>");
 
-        if (sender.hasPermission("miniessentials.fix"))
-            MessageUtil.append("fix", "Restores the durability of your current item in main hand.", helpBuilder);
-
-        if (sender.hasPermission("miniessentials.gm"))
-            MessageUtil.appendWithAliases("gamemode <type> [player]", "Changes your gamemode or someone else's.", helpBuilder, "gm");
-
-        if (sender.hasPermission("miniessentials.god"))
-            MessageUtil.append("god [player]", "Gives you or someone else immunity to damage or hunger.", helpBuilder);
-
-        if (sender.hasPermission("miniessentials.openinv"))
-            MessageUtil.append("openinv <player>", "Opens the player's inventory and enables real-time editing.", helpBuilder);
-
-        if (sender.hasPermission("miniessentials.tpa")) {
-            MessageUtil.append("tpa <player>", "Sends a teleport request to the player.", helpBuilder);
-            MessageUtil.append("tpa accept <player>", "Accepts the TPA request from the player.", helpBuilder);
-            MessageUtil.append("tpa deny <player>", "Denies the TPA request from the player.", helpBuilder);
-        }
-
-        if (sender.hasPermission("miniessentials.trash"))
-            MessageUtil.append("trash", "Opens a trash menu. All contents are cleared on close.", helpBuilder);
-
-        helpBuilder.append("<dark_gray>▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪</dark_gray>");
-
-        return helpBuilder.toString();
+        sender.sendMessage(MessageUtil.parse(helpBuilder.toString()));
     }
 
     private @NonNull String getAboutText() {
@@ -107,7 +118,7 @@ public class MinieCommand implements CommandExecutor {
         String discordUrl = "https://discord.gg/7CuCtDHmQ3";
 
         return "<dark_gray>▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪</dark_gray>\n" +
-                "  <gradient:#ffaa00:#fdb813><bold>" + pluginName + "</bold></gradient> <gray>• Plugin Information</gray>\n\n" +
+                "  <gradient:#ffaa00:#fdb813><bold>" + pluginName + "</bold></gradient>\n\n" +
                 "  <yellow>Version:</yellow> <white>" + version + "</white>\n" +
                 "  <yellow>Author:</yellow> <aqua>" + author + "</aqua>\n\n" +
                 "  <gray>Links: </gray>" +
@@ -115,6 +126,46 @@ public class MinieCommand implements CommandExecutor {
                 "<click:open_url:'" + discordUrl + "'><hover:show_text:'<gray>Click to join support community'><blue>[Discord]</blue></hover></click>\n" +
                 "<dark_gray>▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪</dark_gray>";
 
+    }
+
+    private List<String> getAccessibleHelpLines(CommandSender sender) {
+        List<String> helpLines = new ArrayList<>();
+
+        if (sender.hasPermission("miniessentials.use")) {
+            helpLines.add(MessageUtil.formatString("miniessentials", "Base command for MiniEssentials.", "minie"));
+            helpLines.add(MessageUtil.formatString("minie help", "Shows this help menu.", "minie"));
+
+            if (sender.hasPermission("miniessentials.reload"))
+                helpLines.add(MessageUtil.formatString("minie reload", "Reloads config and messages.", "minie"));
+
+            helpLines.add(MessageUtil.formatString("minie about", "Shows basic information about this plugin.", "minie"));
+        }
+
+        if (sender.hasPermission("miniessentials.echest"))
+            helpLines.add(MessageUtil.formatString("enderchest [player]", "Opens your enderchest or someone else's.", "echest", "ec"));
+
+        if (sender.hasPermission("miniessentials.fix"))
+            helpLines.add(MessageUtil.formatString("fix", "Restores the durability of your current item in main hand."));
+
+        if (sender.hasPermission("miniessentials.gm"))
+            helpLines.add(MessageUtil.formatString("gamemode <type> [player]", "Changes your gamemode or someone else's.", "gm"));
+
+        if (sender.hasPermission("miniessentials.god"))
+            helpLines.add(MessageUtil.formatString("god [player]", "Gives you or someone else immunity to damage or hunger."));
+
+        if (sender.hasPermission("miniessentials.openinv"))
+            helpLines.add(MessageUtil.formatString("openinv <player>", "Opens the player's inventory and enables real-time editing."));
+
+        if (sender.hasPermission("miniessentials.tpa")) {
+            helpLines.add(MessageUtil.formatString("tpa <player>", "Sends a teleport request to the player."));
+            helpLines.add(MessageUtil.formatString("tpa accept <player>", "Accepts the TPA request from the player."));
+            helpLines.add(MessageUtil.formatString("tpa deny <player>", "Denies the TPA request from the player."));
+        }
+
+        if (sender.hasPermission("miniessentials.trash"))
+            helpLines.add(MessageUtil.formatString("trash", "Opens a trash menu. All contents are cleared on close."));
+
+        return helpLines;
     }
 
     public void register() {
