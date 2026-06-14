@@ -66,7 +66,7 @@ public class PlayerListener implements Listener {
 
         int amount = 0;
 
-        for (ItemStack item : player.getInventory().getContents()) {
+        for (ItemStack item : inv.getContents()) {
             if (item == null || item.getType() == Material.AIR)
                 continue;
 
@@ -74,7 +74,7 @@ public class PlayerListener implements Listener {
         }
 
         // TODO messages.yml
-        plugin.sendMessage(player, "<green>Successfully trashed <amount> items.</green>",
+        plugin.sendMessage(player, "<green>Successfully trashed <amount> item(s).</green>",
                 Placeholder.parsed("amount", amount + ""));
 
         // TODO playSound - config
