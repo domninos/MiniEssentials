@@ -54,9 +54,9 @@ public class TPACommand implements CommandExecutor {
 
                 plugin.getTPAManager().denyTPA(player.getUniqueId(), latest);
             } else {
-                OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
+                Player target = Bukkit.getPlayerExact(args[0]);
 
-                if (target.getPlayer() == null || !target.hasPlayedBefore()) {
+                if (target == null || target.getPlayer() == null || !target.hasPlayedBefore() || !target.isOnline()) {
                     plugin.sendMessage(sender, "<red>Player " + args[0] + " is not online.</red>");
                     return true;
                 }
@@ -74,9 +74,9 @@ public class TPACommand implements CommandExecutor {
                 return true;
             }
 
-            OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+            Player target = Bukkit.getPlayerExact(args[1]);
 
-            if (target.getPlayer() == null || !target.hasPlayedBefore()) {
+            if (target == null || target.getPlayer() == null || !target.hasPlayedBefore() || !target.isOnline()) {
                 plugin.sendMessage(sender, "<red>Player " + args[1] + " is not online.</red>");
                 return true;
             }

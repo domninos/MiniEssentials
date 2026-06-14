@@ -73,9 +73,9 @@ public class GameModeCommand implements CommandExecutor {
                     return true;
                 }
 
-                OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                Player target = Bukkit.getPlayerExact(args[0]);
 
-                if (target.getPlayer() == null || !target.hasPlayedBefore()) {
+                if (target == null || target.getPlayer() == null || !target.hasPlayedBefore() || !target.isOnline()) {
                     plugin.sendMessage(sender, "<red>Player " + args[0] + " is not online.</red>");
                     return true;
                 }

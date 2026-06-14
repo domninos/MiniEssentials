@@ -37,10 +37,10 @@ public class EnderChestCommand implements CommandExecutor {
                 return true;
             }
 
-            OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
+            Player target = Bukkit.getPlayerExact(args[0]);
 
-            if (target.getPlayer() == null || !target.hasPlayedBefore()) {
-                plugin.sendMessage(player, "<red>Player " + args[0] + " is not online.</red>");
+            if (target == null || target.getPlayer() == null || !target.hasPlayedBefore() || !target.isOnline()) {
+                plugin.sendMessage(sender, "<red>Player " + args[0] + " is not online.</red>");
                 return true;
             }
 
