@@ -5,12 +5,14 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
+import java.util.Arrays;
+
 public class MessageUtil {
 
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
     private static final Component PREFIX =
             MiniMessage.miniMessage().deserialize(
-                    "<gray>[</gray><gradient:#00AAFF:#55FFFF>MiniEssentials</gradient><gray>]</gray> "
+                    "<gray>[</gray><gradient:#00AAFF:#55FFFF><bold>MiniEssentials</bold></gradient><gray>]</gray> "
             );
 
     private MessageUtil() {
@@ -41,7 +43,7 @@ public class MessageUtil {
 
     /**
      * Parses a string whether using the legacy '&' color codes or the new minimessage format.
-     * Doesn't use prefix.
+     * Note: Doesn't use prefix.
      *
      * @param msg String to deserialize
      * @return the deserialized colored text
@@ -54,7 +56,7 @@ public class MessageUtil {
     }
 
     /**
-     * For my commands.
+     * For OMC commands.
      * Appends commands its description to a {@link StringBuilder}.
      *
      * @param command     the command label and arguments (without `/`)
@@ -62,35 +64,33 @@ public class MessageUtil {
      * @param builder     the {@link StringBuilder} to append to
      */
     public static void append(String command, String description, StringBuilder builder) {
-        builder.append("  <gold>/")
-                .append(command)
-                .append("</gold> <dark_gray>-</dark_gray> <gray>")
-                .append(description)
-                .append("</gray>")
-                .append("\n");
+        builder.append(formatString(command, description));
     }
 
     /**
-     * For my commands.
-     * Appends the plugin command labels, descriptions, and aliases to a {@link StringBuilder}.
+     * For OMC commands.
+     * Creates the base unparsed {@link String} that contains command labels, description, and aliases.
      *
      * @param command     the command label and arguments (without `/`)
      * @param description description of the command
-     * @param builder     the {@link StringBuilder} to append to
-     * @param aliases     command aliases (if any).
+     * @param aliases     command aliases (if any)
+     * @return the original unparsed {@link String}
      */
-    public static void appendWithAliases(String command, String description, StringBuilder builder, String... aliases) {
-        builder.append("  <gold>/")
+    public static String formatString(String command, String description, String... aliases) {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("  <gold>")
                 .append(command)
-                .append("</gold> <dark_gray>-</dark_gray> <gray>")
+                .append("</gold> <dark_gray>-</dark_gray>")
                 .append(description)
                 .append("</gray>")
                 .append("\n");
 
-        if (aliases != null && aliases.length > 0) {
-            builder.append("  <dark_gray>↳ <italic>Aliases: ")
-                    .append(java.util.Arrays.toString(aliases))
-                    .append("</italic></dark_gray>\n");
-        }
+        if (aliases != null && aliases.length > 0)
+            builder.append("  <white>⤷ <italic>⤻Aliases: ")
+                    .append(Arrays.toString(aliases))
+                    .append("</italic></white>\n");
+
+        return builder.toString();
     }
 }
