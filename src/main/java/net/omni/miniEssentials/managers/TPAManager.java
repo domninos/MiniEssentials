@@ -1,0 +1,174 @@
+package net.omni.miniEssentials.managers;
+
+import net.kyori.adventure.text.Component;
+import net.omni.miniEssentials.MiniEssentials;
+import net.omni.miniEssentials.util.MessageUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.util.*;
+
+public class TPAManager {
+
+    private final Map<UUID, Set<UUID>> tpaRequests = new HashMap<>();
+
+    private final Map<UUID, Long> tpaCooldowns = new HashMap<>();
+
+    private final Map<UUID, BukkitTask> tpaTasks = new HashMap<>();
+
+    private final MiniEssentials plugin;
+
+    public TPAManager(MiniEssentials plugin) {
+        this.plugin = plugin;
+    }
+
+    public void submitTPA(UUID fromPlayer, UUID toPlayer) {
+        Player player = Bukkit.getPlayer(fromPlayer);
+
+        if (player == null)
+            return;
+
+        Player targetPlayer = Bukkit.getPlayer(fromPlayer);
+
+        if (targetPlayer == null)
+            return;
+
+        if (hasTPA(fromPlayer, toPlayer) && tpaCooldowns.containsKey(fromPlayer)) {
+            long timeLeft = tpaCooldowns.get(fromPlayer) - System.currentTimeMillis() / 1000;
+            String cd = timeLeft > 1 ? timeLeft + " seconds" : timeLeft + " second";
+
+            plugin.sendMessage(player, "<red>You already have an ongoing TPA request. Please wait for " + cd + ".</red>");
+            return;
+        }
+
+        // TODO messages.yml
+        String miniMessageString = "<yellow><player></yellow> is requesting to teleport to you.\n" +
+                "<bold><click:run_command:/tpaccept><hover:show_text:'<green>Click to accept'><green>[ACCEPT]</green></hover></click></bold> " +
+                " <bold><click:run_command:/tpdeny><hover:show_text:'<red>Click to deny'><red>[DENY]</red></hover></click></bold>";
+
+        Component text = MessageUtil.parse(miniMessageString);
+
+        targetPlayer.sendMessage(text);
+
+        tpaTasks.put(fromPlayer, Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Set<UUID> requests = getTPARequests(toPlayer);
+
+            if (!requests.isEmpty())
+                requests.remove(fromPlayer);
+
+            tpaCooldowns.remove(fromPlayer);
+
+            tpaTasks.remove(fromPlayer);
+
+            plugin.sendMessage(player, "<red>Your TPA request to " + targetPlayer.getName() + " has expired.</red>");
+        }, 20 * 30)); // TODO config - default: 30 seconds
+
+        tpaCooldowns.put(fromPlayer, System.currentTimeMillis() + 60 * 100 * 1000);
+
+        tpaRequests.compute(toPlayer, (_, requests) -> {
+            if (requests == null)
+                requests = new HashSet<>();
+
+            requests.add(fromPlayer);
+
+            return requests;
+        });
+    }
+
+    public boolean hasTPA(UUID fromPlayer, UUID toPlayer) {
+        return tpaRequests.containsKey(toPlayer) && tpaRequests.get(toPlayer).contains(fromPlayer);
+    }
+
+    public Set<UUID> getTPARequests(UUID player) {
+        return tpaRequests.get(player);
+    }
+
+    public boolean hasTPA(UUID player) {
+        return tpaRequests.containsKey(player) || tpaRequests.values().stream().anyMatch(set -> set.contains(player));
+    }
+
+    public void acceptTPA(UUID fromPlayer, UUID toPlayer) {
+        // used /tpaccept <player>
+
+        Player player = Bukkit.getPlayer(fromPlayer);
+
+        if (player == null)
+            return;
+
+        Player targetPlayer = Bukkit.getPlayer(fromPlayer);
+
+        if (targetPlayer == null)
+            return;
+
+        if (!hasTPA(fromPlayer, toPlayer))
+            return;
+
+        player.teleport(targetPlayer.getLocation());
+
+        // TODO messages.yml
+        plugin.sendMessage(player, "<yellow>You have teleported to " + targetPlayer.getName() + "'s location.");
+        removeRequestFromPlayer(fromPlayer, toPlayer);
+    }
+
+    public void removeRequestFromPlayer(UUID player, UUID toPlayer) {
+        tpaCooldowns.remove(player);
+
+        BukkitTask task = tpaTasks.get(player);
+
+        if (task != null && !task.isCancelled())
+            task.cancel();
+
+        tpaRequests.get(toPlayer).remove(player);
+    }
+
+    public void denyTPA(UUID fromPlayer, UUID toPlayer) {
+        // used /tpa deny <player>
+
+        Player player = Bukkit.getPlayer(fromPlayer);
+
+        if (player == null)
+            return;
+
+        Player targetPlayer = Bukkit.getPlayer(fromPlayer);
+
+        if (targetPlayer == null)
+            return;
+
+        if (!hasTPA(fromPlayer, toPlayer))
+            return;
+
+        // TODO messages.yml
+        plugin.sendMessage(player, "<red>Your TPA request to " + targetPlayer.getName() + " was denied.</red>");
+        removeRequestFromPlayer(fromPlayer, toPlayer);
+    }
+
+    public void removeRequests(UUID player) {
+        tpaCooldowns.remove(player);
+
+        BukkitTask task = tpaTasks.get(player);
+
+        if (task != null && !task.isCancelled())
+            task.cancel();
+
+        tpaRequests.values().forEach(set -> set.remove(player));
+    }
+
+    public UUID getLatestTPA(UUID toPlayer) {
+        return tpaRequests.containsKey(toPlayer) ? tpaRequests.get(toPlayer).iterator().next() : null;
+    }
+
+    public void flush() {
+        if (!tpaRequests.isEmpty()) {
+            tpaRequests.values().forEach(Set::clear);
+            tpaRequests.clear();
+        }
+
+        if (!tpaTasks.isEmpty()) {
+            tpaTasks.values().forEach(BukkitTask::cancel);
+            tpaTasks.clear();
+        }
+
+        tpaCooldowns.clear();
+    }
+}

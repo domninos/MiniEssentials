@@ -4,6 +4,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.omni.miniEssentials.commands.*;
 import net.omni.miniEssentials.listener.PlayerListener;
 import net.omni.miniEssentials.managers.GodManager;
+import net.omni.miniEssentials.managers.TPAManager;
 import net.omni.miniEssentials.util.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -12,10 +13,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class MiniEssentials extends JavaPlugin {
 
     private GodManager godManager;
+    private TPAManager tpaManager;
 
     @Override
     public void onDisable() {
         godManager.flush();
+        tpaManager.flush();
 
         sendConsole("<red>MiniEssentials is now disabled.</red>");
     }
@@ -23,6 +26,7 @@ public final class MiniEssentials extends JavaPlugin {
     @Override
     public void onEnable() {
         this.godManager = new GodManager();
+        this.tpaManager = new TPAManager(this);
 
         registerCommands();
 
@@ -62,5 +66,9 @@ public final class MiniEssentials extends JavaPlugin {
 
     public GodManager getGodManager() {
         return godManager;
+    }
+
+    public TPAManager getTPAManager() {
+        return tpaManager;
     }
 }
