@@ -1,6 +1,9 @@
 package net.omni.miniEssentials;
 
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.omni.miniEssentials.commands.*;
+import net.omni.miniEssentials.listener.PlayerListener;
+import net.omni.miniEssentials.managers.GodManager;
 import net.omni.miniEssentials.util.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -8,14 +11,45 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MiniEssentials extends JavaPlugin {
 
+    private GodManager godManager;
+
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        godManager.flush();
+
+        sendConsole("<red>MiniEssentials is now disabled.</red>");
     }
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
+        this.godManager = new GodManager();
+
+        registerCommands();
+
+        registerListeners();
+
+        sendConsole("<green>Successfully enabled MiniEssentials-v" + getDescription().getVersion() + "</green>");
+    }
+
+    private void registerCommands() {
+        new EnderChestCommand(this).register();
+        new FixCommand(this).register();
+        new GameModeCommand(this).register();
+        new GodCommand(this).register();
+        new OpenInvCommand(this).register();
+        new TPACommand(this).register();
+    }
+
+    private void registerListeners() {
+        new PlayerListener(this).register();
+    }
+
+    public void sendConsole(String message) {
+        sendMessage(Bukkit.getConsoleSender(), message);
+    }
+
+    public void sendMessage(CommandSender sender, String message) {
+        sender.sendMessage(MessageUtil.color(message));
     }
 
     public void sendConsole(String message, TagResolver... resolvers) {
@@ -26,11 +60,7 @@ public final class MiniEssentials extends JavaPlugin {
         sender.sendMessage(MessageUtil.color(message, resolvers));
     }
 
-    public void sendConsole(String message) {
-        sendMessage(Bukkit.getConsoleSender(), message);
-    }
-
-    public void sendMessage(CommandSender sender, String message) {
-        sender.sendMessage(MessageUtil.color(message));
+    public GodManager getGodManager() {
+        return godManager;
     }
 }
