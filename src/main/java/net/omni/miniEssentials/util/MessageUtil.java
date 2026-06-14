@@ -66,7 +66,7 @@ public class MessageUtil {
                 .append("</gold> <dark_gray>-</dark_gray> <gray>")
                 .append(description)
                 .append("</gray>")
-                .append("\n\n");
+                .append("\n");
     }
 
     /**
@@ -84,14 +84,12 @@ public class MessageUtil {
                 .append("</gold> <dark_gray>-</dark_gray> <gray>")
                 .append(description)
                 .append("</gray>")
-                .append("\n\n");
+                .append("\n");
 
         if (aliases != null && aliases.length > 0) {
             builder.append("  <dark_gray>↳ <italic>Aliases: ")
                     .append(java.util.Arrays.toString(aliases))
                     .append("</italic></dark_gray>\n");
         }
-
-        builder.append("\n");
     }
 }
