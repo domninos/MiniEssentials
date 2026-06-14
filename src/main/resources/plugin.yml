@@ -1,0 +1,9 @@
+name: MiniEssentials
+description: $description
+version: '${version}'
+
+main: net.omni.miniEssentials.MiniEssentials
+api-version: '26.1.2'
+load: POSTWORLD
+
+authors: [ domninos ]
