@@ -41,7 +41,7 @@ public class MinieCommand implements CommandExecutor {
                 // TODO reload messages.yml
                 plugin.sendMessage(sender, "<green>Messages have been reloaded.");
             } else if (args[0].equalsIgnoreCase("about"))
-                plugin.sendMessage(sender, getAboutText());
+                sender.sendMessage(MessageUtil.parse(getAboutText()));
             else if (args[0].equalsIgnoreCase("help"))
                 plugin.sendMessage(sender, getHelpText(sender));
             else
