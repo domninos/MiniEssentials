@@ -1,5 +1,6 @@
 package net.omni.miniEssentials.listener;
 
+import io.papermc.paper.event.player.PlayerSwapWithEquipmentSlotEvent;
 import net.omni.miniEssentials.MiniEssentials;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -13,6 +14,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -30,12 +32,17 @@ public class OpenInvListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Player opener = (Player) event.getWhoClicked();
 
+        if (plugin.getInventoryEditManager().isBeingViewed(opener)) {
+            updateViewerInv(opener, true);
+            return;
+        }
+
         if (!plugin.getInventoryEditManager().isViewer(opener))
             return;
 
         int slot = event.getRawSlot();
 
-        if (slot >= 36 && slot <= 44) {
+        if ((slot >= 36 && slot <= 44) || (slot >= 50 && slot <= 53)) {
             event.setCancelled(true);
             return;
         }
@@ -44,9 +51,24 @@ public class OpenInvListener implements Listener {
             return;
 
         Player target = Bukkit.getPlayer(plugin.getInventoryEditManager().getViewing(opener));
+
         if (target == null || !target.isOnline()) {
             opener.closeInventory();
             plugin.sendMessage(opener, "<red>Player went offline.</red>");
+            return;
+        }
+
+        Inventory inv = event.getInventory();
+
+        // bulk update the inventory
+        if (event.getClick() == ClickType.DOUBLE_CLICK) {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                for (int i = 0; i < 36; i++)
+                    target.getInventory().setItem(i, inv.getItem(i));
+
+                plugin.getInventoryEditManager().fillInventory(inv, target.getInventory());
+                target.updateInventory();
+            });
             return;
         }
 
@@ -67,12 +89,49 @@ public class OpenInvListener implements Listener {
         }
 
         if (event.isShiftClick()) {
+            // handle shift clicking, send warning message only once
             event.setCancelled(true);
-            plugin.sendMessage(opener, "<red>You cannot shift-click items.</red>");
+
+            if (plugin.getInventoryEditManager().shouldSendWarning(opener))
+                plugin.getInventoryEditManager().setLastWarnedTime(opener);
+
             return;
         }
 
-        Bukkit.getScheduler().runTask(plugin, () -> this.updateInventory(slot, event.getInventory(), target));
+        Bukkit.getScheduler().runTask(plugin, () -> this.updateInventory(slot, inv, target));
+    }
+
+    // when target changes something to their inventory or picks up an item
+    private void updateViewerInv(Player player, boolean updateArmor) {
+        if (!plugin.getInventoryEditManager().isBeingViewed(player))
+            return;
+
+        Player viewer = plugin.getInventoryEditManager().getViewerOf(player);
+
+        if (viewer == null || !viewer.isOnline())
+            return;
+
+        if (!plugin.getInventoryEditManager().isViewer(viewer))
+            return;
+
+        Inventory topInv = viewer.getOpenInventory().getTopInventory();
+
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            for (int i = 0; i < 36; i++)
+                topInv.setItem(i, player.getInventory().getItem(i));
+
+            if (updateArmor) {
+                topInv.setItem(45, player.getInventory().getHelmet());
+                topInv.setItem(46, player.getInventory().getChestplate());
+                topInv.setItem(47, player.getInventory().getLeggings());
+                topInv.setItem(48, player.getInventory().getBoots());
+            }
+
+            // offhand
+            topInv.setItem(49, player.getInventory().getItemInOffHand());
+
+            viewer.updateInventory();
+        });
     }
 
     private boolean isValidForSlot(int slot, Material type) {
@@ -107,6 +166,16 @@ public class OpenInvListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
+        updateViewerInv(event.getPlayer(), false);
+    }
+
+    @EventHandler
+    public void onPlayerSwapWithEquipmentSlot(PlayerSwapWithEquipmentSlotEvent event) {
+        updateViewerInv(event.getPlayer(), true);
+    }
+
+    @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
         Player opener = (Player) event.getWhoClicked();
 
@@ -124,7 +193,7 @@ public class OpenInvListener implements Listener {
             int slot = entry.getKey();
             ItemStack item = entry.getValue();
 
-            if (slot >= 36 && slot <= 44) {
+            if ((slot >= 36 && slot <= 44) || (slot >= 50 && slot <= 53)) {
                 event.setCancelled(true);
                 return;
             }
@@ -142,47 +211,6 @@ public class OpenInvListener implements Listener {
 
             for (int slot : event.getNewItems().keySet())
                 updateInventory(slot, inv, target);
-        });
-    }
-
-    // when target changes something to their inventory or picks up an item
-
-    @EventHandler
-    public void onTargetInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player)) return;
-
-        updateViewerInv(player, true);
-    }
-
-    private void updateViewerInv(Player player, boolean updateArmor) {
-        if (!plugin.getInventoryEditManager().isBeingViewed(player))
-            return;
-
-        Player viewer = plugin.getInventoryEditManager().getViewerOf(player);
-
-        if (viewer == null || !viewer.isOnline())
-            return;
-
-        if (!plugin.getInventoryEditManager().isViewer(viewer))
-            return;
-
-        Inventory topInv = viewer.getOpenInventory().getTopInventory();
-
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            for (int i = 0; i < 36; i++)
-                topInv.setItem(i, player.getInventory().getItem(i));
-
-            if (updateArmor) {
-                topInv.setItem(45, player.getInventory().getHelmet());
-                topInv.setItem(46, player.getInventory().getChestplate());
-                topInv.setItem(47, player.getInventory().getLeggings());
-                topInv.setItem(48, player.getInventory().getBoots());
-            }
-
-            // offhand
-            topInv.setItem(49, player.getInventory().getItemInOffHand());
-
-            viewer.updateInventory();
         });
     }
 

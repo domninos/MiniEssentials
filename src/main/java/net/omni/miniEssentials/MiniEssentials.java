@@ -15,7 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MiniEssentials extends JavaPlugin {
 
-    // TODO /openinv - show armor and offhand
     // TODO messages.yml
 
     private GodManager godManager;
@@ -38,7 +37,7 @@ public final class MiniEssentials extends JavaPlugin {
         this.godManager = new GodManager(this);
         this.tpaManager = new TPAManager(this);
         this.trashManager = new TrashManager();
-        this.inventoryEditManager = new InventoryEditManager();
+        this.inventoryEditManager = new InventoryEditManager(this);
 
         trashManager.loadTrashInventory();
 

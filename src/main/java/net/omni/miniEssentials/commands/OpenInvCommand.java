@@ -40,6 +40,11 @@ public class OpenInvCommand implements CommandExecutor {
             return true;
         }
 
+        if (player.getUniqueId().equals(target.getUniqueId())) {
+            plugin.sendMessage(player, "<red>You cannot use this on yourself.</red>");
+            return true;
+        }
+
         plugin.getInventoryEditManager().openInv(player, target.getPlayer());
         return true;
     }
