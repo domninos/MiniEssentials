@@ -28,7 +28,7 @@ public final class MiniEssentials extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.godManager = new GodManager();
+        this.godManager = new GodManager(this);
         this.tpaManager = new TPAManager(this);
         this.trashManager = new TrashManager();
 

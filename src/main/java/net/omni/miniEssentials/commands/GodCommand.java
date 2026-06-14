@@ -25,10 +25,9 @@ public class GodCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            if (sender instanceof Player player) {
+            if (sender instanceof Player player)
                 plugin.getGodManager().toggleGod(player);
-                plugin.sendMessage(player, "<green>You are now in GOD mode!</green>");
-            } else
+            else
                 plugin.sendMessage(sender, "<red>Only players can use this command.</red>");
 
             return true;
