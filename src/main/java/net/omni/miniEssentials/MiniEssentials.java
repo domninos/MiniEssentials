@@ -13,6 +13,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MiniEssentials extends JavaPlugin {
 
+    // TODO /openinv - show armor and offhand
+    // TODO messages.yml
+
     private GodManager godManager;
     private TPAManager tpaManager;
     private TrashManager trashManager;

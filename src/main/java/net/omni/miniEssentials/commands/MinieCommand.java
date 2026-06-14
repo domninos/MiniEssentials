@@ -102,10 +102,11 @@ public class MinieCommand implements CommandExecutor {
                     .append("><hover:show_text:'<gray>Click for page ").append(page - 1)
                     .append("'><gray>[◀ Previous]</gray></hover></click>");
         } else {
-            helpBuilder.append("<gray>[◀ Previous]</gray>");
+            if (page < totalPages)
+                helpBuilder.append("<gray>[◀ Previous]</gray>");
         }
 
-        helpBuilder.append("<dark_gray>▪▪▪▪▪▪▪▪ </dark_gray>");
+        helpBuilder.append("<dark_gray> ▪▪▪▪▪▪▪▪ </dark_gray>");
 
         if (page < totalPages) {
             helpBuilder.append("<click:run_command:/minie help ").append(page + 1)
@@ -128,7 +129,7 @@ public class MinieCommand implements CommandExecutor {
         String discordUrl = "https://discord.gg/7CuCtDHmQ3";
 
         return "<dark_gray>▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪</dark_gray>\n" +
-                "  <gradient:#ffaa00:#fdb813><bold>" + pluginName + "</bold></gradient>\n\n" +
+                "  <gradient:#00AAFF:#55FFFF><bold>" + pluginName + "</bold></gradient>\n\n" +
                 "  <yellow>Version:</yellow> <white>" + version + "</white>\n" +
                 "  <yellow>Author:</yellow> <aqua>" + author + "</aqua>\n\n" +
                 "  <gray>Links: </gray>" +

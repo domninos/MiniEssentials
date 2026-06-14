@@ -79,9 +79,9 @@ public class MessageUtil {
     public static String formatString(String command, String description, String... aliases) {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("  <gold>")
+        builder.append("  <#00AAFF>/")
                 .append(command)
-                .append("</gold> <dark_gray>-</dark_gray>")
+                .append("</color> <dark_gray>-</dark_gray> <gray> ")
                 .append(description)
                 .append("</gray>")
                 .append("\n");
