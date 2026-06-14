@@ -27,7 +27,7 @@ public class MinieCommand implements CommandExecutor {
 
         if (args.length == 0) {
             // send help
-            plugin.sendMessage(sender, getHelpText(sender));
+            sender.sendMessage(MessageUtil.parse(getHelpText(sender)));
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("reload")) {

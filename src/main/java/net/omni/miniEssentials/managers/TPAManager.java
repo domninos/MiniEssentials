@@ -1,6 +1,7 @@
 package net.omni.miniEssentials.managers;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.omni.miniEssentials.MiniEssentials;
 import net.omni.miniEssentials.util.MessageUtil;
 import org.bukkit.Bukkit;
@@ -43,11 +44,14 @@ public class TPAManager {
         }
 
         // TODO messages.yml
-        String miniMessageString = "<yellow><player></yellow> is requesting to teleport to you.\n" +
-                "<bold><click:run_command:/tpaccept><hover:show_text:'<green>Click to accept'><green>[ACCEPT]</green></hover></click></bold> " +
-                " <bold><click:run_command:/tpdeny><hover:show_text:'<red>Click to deny'><red>[DENY]</red></hover></click></bold>";
+        String miniMessageString = """
+                
+                <yellow><from_player></yellow> is requesting to teleport to you.
+                <bold><click:run_command:/tpa accept <from_player>><hover:show_text:'<green>Click to accept'><green>[ACCEPT]</green></hover></click></bold> \
+                 <bold><click:run_command:/tpa deny <from_player>><hover:show_text:'<red>Click to deny'><red>[DENY]</red></hover></click></bold>
+                """;
 
-        Component text = MessageUtil.parse(miniMessageString);
+        Component text = MessageUtil.parse(miniMessageString, Placeholder.parsed("from_player", player.getName()));
 
         targetPlayer.sendMessage(text);
 
