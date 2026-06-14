@@ -81,10 +81,14 @@ public class TPACommand implements CommandExecutor {
                 return true;
             }
 
+            String res = "<red>Something went wrong. Please try again</red>";
+
             if (args[0].equalsIgnoreCase("accept"))
-                plugin.getTPAManager().acceptTPA(player.getUniqueId(), target.getUniqueId());
+                res = plugin.getTPAManager().acceptTPA(player.getUniqueId(), target.getUniqueId());
             else if (args[0].equalsIgnoreCase("deny"))
-                plugin.getTPAManager().denyTPA(player.getUniqueId(), target.getUniqueId());
+                res = plugin.getTPAManager().denyTPA(player.getUniqueId(), target.getUniqueId());
+
+            plugin.sendMessage(sender, res);
 
             return true;
         } else {

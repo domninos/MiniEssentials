@@ -36,7 +36,10 @@ public class TPAManager {
             return;
 
         if (hasTPA(fromPlayer, toPlayer) && tpaCooldowns.containsKey(fromPlayer)) {
-            long timeLeft = tpaCooldowns.get(fromPlayer) - System.currentTimeMillis() / 1000;
+            long timeLeft = (tpaCooldowns.get(fromPlayer) - System.currentTimeMillis()) / 1000;
+
+            if (timeLeft < 0) timeLeft = 1;
+
             String cd = timeLeft > 1 ? timeLeft + " seconds" : timeLeft + " second";
 
             plugin.sendMessage(player, "<red>You already have an ongoing TPA request. Please wait for " + cd + ".</red>");
@@ -49,6 +52,7 @@ public class TPAManager {
                 <yellow><from_player></yellow> is requesting to teleport to you.
                 <bold><click:run_command:/tpa accept <from_player>><hover:show_text:'<green>Click to accept'><green>[ACCEPT]</green></hover></click></bold> \
                  <bold><click:run_command:/tpa deny <from_player>><hover:show_text:'<red>Click to deny'><red>[DENY]</red></hover></click></bold>
+                
                 """;
 
         Component text = MessageUtil.parse(miniMessageString, Placeholder.parsed("from_player", player.getName()));
@@ -65,7 +69,8 @@ public class TPAManager {
 
             tpaTasks.remove(fromPlayer);
 
-            plugin.sendMessage(player, "<red>Your TPA request to " + targetPlayer.getName() + " has expired.</red>");
+            if (player.isOnline())
+                plugin.sendMessage(player, "<red>Your TPA request to " + targetPlayer.getName() + " has expired.</red>");
         }, 20 * 30)); // TODO config - default: 30 seconds
 
         tpaCooldowns.put(fromPlayer, System.currentTimeMillis() + 60 * 100 * 1000);
@@ -92,27 +97,28 @@ public class TPAManager {
         return tpaRequests.containsKey(player) || tpaRequests.values().stream().anyMatch(set -> set.contains(player));
     }
 
-    public void acceptTPA(UUID fromPlayer, UUID toPlayer) {
+    public String acceptTPA(UUID fromPlayer, UUID toPlayer) {
         // used /tpaccept <player>
 
         Player player = Bukkit.getPlayer(fromPlayer);
 
         if (player == null)
-            return;
+            return "<red>Something went wrong. Please try again.</red>";
 
         Player targetPlayer = Bukkit.getPlayer(fromPlayer);
 
         if (targetPlayer == null)
-            return;
+            return "<red>Something went wrong. Please try again.</red>";
 
         if (!hasTPA(fromPlayer, toPlayer))
-            return;
+            return "<red>Could not find your TPA request. Please try again.</red>";
 
         player.teleport(targetPlayer.getLocation());
 
-        // TODO messages.yml
-        plugin.sendMessage(player, "<yellow>You have teleported to " + targetPlayer.getName() + "'s location.");
         removeRequestFromPlayer(fromPlayer, toPlayer);
+
+        // TODO messages.yml
+        return "<yellow>You have teleported to " + targetPlayer.getName() + "'s location.";
     }
 
     public void removeRequestFromPlayer(UUID player, UUID toPlayer) {
@@ -126,25 +132,26 @@ public class TPAManager {
         tpaRequests.get(toPlayer).remove(player);
     }
 
-    public void denyTPA(UUID fromPlayer, UUID toPlayer) {
+    public String denyTPA(UUID fromPlayer, UUID toPlayer) {
         // used /tpa deny <player>
 
         Player player = Bukkit.getPlayer(fromPlayer);
 
         if (player == null)
-            return;
+            return "<red>Something went wrong. Please try again.</red>";
 
         Player targetPlayer = Bukkit.getPlayer(fromPlayer);
 
         if (targetPlayer == null)
-            return;
+            return "<red>Something went wrong. Please try again.</red>";
 
         if (!hasTPA(fromPlayer, toPlayer))
-            return;
+            return "<red>Could not find your TPA request. Please try again.</red>";
+
+        removeRequestFromPlayer(fromPlayer, toPlayer);
 
         // TODO messages.yml
-        plugin.sendMessage(player, "<red>Your TPA request to " + targetPlayer.getName() + " was denied.</red>");
-        removeRequestFromPlayer(fromPlayer, toPlayer);
+        return "<red>Your TPA request to " + targetPlayer.getName() + " was denied.</red>";
     }
 
     public void removeRequests(UUID player) {
@@ -159,7 +166,19 @@ public class TPAManager {
     }
 
     public UUID getLatestTPA(UUID toPlayer) {
-        return tpaRequests.containsKey(toPlayer) ? tpaRequests.get(toPlayer).iterator().next() : null;
+        if (tpaRequests.isEmpty())
+            return null;
+
+        if (tpaRequests.containsKey(toPlayer)) {
+            Set<UUID> requests = tpaRequests.get(toPlayer);
+
+            if (requests.isEmpty())
+                return null;
+
+            return requests.iterator().next();
+        }
+
+        return null;
     }
 
     public void flush() {
