@@ -40,14 +40,15 @@ public class MessageUtil {
     }
 
     /**
-     * Parses a string whether using the legacy '&' color codes or the new minimessage format
+     * Parses a string whether using the legacy '&' color codes or the new minimessage format.
+     * Doesn't use prefix.
      *
      * @param msg String to deserialize
      * @return the deserialized colored text
      */
-    public static Component parse(String msg) {
+    public static Component parse(String msg, TagResolver... resolvers) {
         if (msg.contains("<") && msg.contains(">"))
-            return MINI_MESSAGE.deserialize(msg);
+            return resolvers != null && resolvers.length > 0 ? MINI_MESSAGE.deserialize(msg, resolvers) : MINI_MESSAGE.deserialize(msg);
         else
             return LegacyComponentSerializer.legacyAmpersand().deserialize(msg);
     }
