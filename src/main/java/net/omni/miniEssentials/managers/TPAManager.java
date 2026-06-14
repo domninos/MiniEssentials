@@ -131,7 +131,7 @@ public class TPAManager {
         removeRequestFromPlayer(fromPlayer, toPlayer);
 
         // TODO messages.yml
-        plugin.sendMessage(player, "<yellow>You have teleported to " + targetPlayer.getName() + "'s location.");
+        plugin.sendMessage(player, "<yellow>You have teleported to " + targetPlayer.getName() + "'s location.</yellow>");
     }
 
     public void removeRequestFromPlayer(UUID player, UUID toPlayer) {

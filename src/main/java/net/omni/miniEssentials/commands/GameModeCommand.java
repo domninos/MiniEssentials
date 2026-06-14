@@ -3,7 +3,6 @@ package net.omni.miniEssentials.commands;
 import net.omni.miniEssentials.MiniEssentials;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -11,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,7 +47,7 @@ public class GameModeCommand implements CommandExecutor {
                 try {
                     gameMode = GameMode.getByValue(Integer.parseInt(args[0]));
                 } catch (NumberFormatException e) {
-                    plugin.sendMessage(sender, "<red>Invalid game mode.</red>");
+                    plugin.sendMessage(sender, "<red>Could not find gamemode.</red>");
                     return true;
                 }
             }
@@ -101,7 +99,12 @@ public class GameModeCommand implements CommandExecutor {
             @Override
             public @NonNull List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
                 if (args.length == 1) {
-                    List<String> subcommands = List.of(Arrays.toString(GameMode.values()));
+                    List<String> subcommands = new ArrayList<>();
+
+                    subcommands.add("survival");
+                    subcommands.add("creative");
+                    subcommands.add("adventure");
+                    subcommands.add("spectator");
 
                     List<String> completions = new ArrayList<>();
                     StringUtil.copyPartialMatches(args[0], subcommands, completions);

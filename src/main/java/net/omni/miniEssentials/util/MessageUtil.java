@@ -83,12 +83,13 @@ public class MessageUtil {
                 .append(command)
                 .append("</#00AAFF> <dark_gray>-</dark_gray> <gray> ")
                 .append(description)
-                .append("</gray>");
+                .append("</gray>")
+                .append("\n");
 
         if (aliases != null && aliases.length > 0)
             builder.append("  <white> <italic>⤷ Aliases: ")
                     .append(Arrays.toString(aliases))
-                    .append("</italic></white>\n");
+                    .append("</italic></white>");
 
         return builder.toString();
     }

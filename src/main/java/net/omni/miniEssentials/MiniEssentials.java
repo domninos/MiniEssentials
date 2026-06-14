@@ -4,11 +4,9 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.omni.miniEssentials.commands.*;
 import net.omni.miniEssentials.listener.OpenInvListener;
 import net.omni.miniEssentials.listener.PlayerListener;
-import net.omni.miniEssentials.managers.GodManager;
-import net.omni.miniEssentials.managers.InventoryEditManager;
-import net.omni.miniEssentials.managers.TPAManager;
-import net.omni.miniEssentials.managers.TrashManager;
+import net.omni.miniEssentials.managers.*;
 import net.omni.miniEssentials.util.MessageUtil;
+import net.omni.miniEssentials.util.MiniConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,6 +20,9 @@ public final class MiniEssentials extends JavaPlugin {
     private TrashManager trashManager;
     private InventoryEditManager inventoryEditManager;
 
+    private MiniConfig messagesConfig;
+    private MessagesManager messagesManager;
+
     @Override
     public void onDisable() {
         godManager.flush();
@@ -29,11 +30,19 @@ public final class MiniEssentials extends JavaPlugin {
         trashManager.flush();
         inventoryEditManager.flush();
 
+        messagesManager.flush();
+
         sendConsole("<red>MiniEssentials is now disabled.</red>");
     }
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+
+        this.messagesConfig = new MiniConfig(this, "messages.yml");
+        this.messagesManager = new MessagesManager(this);
+        messagesManager.loadMessages();
+
         this.godManager = new GodManager(this);
         this.tpaManager = new TPAManager(this);
         this.trashManager = new TrashManager();
@@ -95,5 +104,13 @@ public final class MiniEssentials extends JavaPlugin {
 
     public InventoryEditManager getInventoryEditManager() {
         return inventoryEditManager;
+    }
+
+    public MiniConfig getMessagesConfig() {
+        return messagesConfig;
+    }
+
+    public MessagesManager getMessagesManager() {
+        return messagesManager;
     }
 }
