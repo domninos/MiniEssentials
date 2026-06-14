@@ -5,6 +5,7 @@ import net.omni.miniEssentials.commands.*;
 import net.omni.miniEssentials.listener.PlayerListener;
 import net.omni.miniEssentials.managers.GodManager;
 import net.omni.miniEssentials.managers.TPAManager;
+import net.omni.miniEssentials.managers.TrashManager;
 import net.omni.miniEssentials.util.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -14,11 +15,13 @@ public final class MiniEssentials extends JavaPlugin {
 
     private GodManager godManager;
     private TPAManager tpaManager;
+    private TrashManager trashManager;
 
     @Override
     public void onDisable() {
         godManager.flush();
         tpaManager.flush();
+        trashManager.flush();
 
         sendConsole("<red>MiniEssentials is now disabled.</red>");
     }
@@ -27,6 +30,9 @@ public final class MiniEssentials extends JavaPlugin {
     public void onEnable() {
         this.godManager = new GodManager();
         this.tpaManager = new TPAManager(this);
+        this.trashManager = new TrashManager();
+
+        trashManager.loadTrashInventory();
 
         registerCommands();
 
@@ -42,6 +48,7 @@ public final class MiniEssentials extends JavaPlugin {
         new GodCommand(this).register();
         new OpenInvCommand(this).register();
         new TPACommand(this).register();
+        new TrashCommand(this).register();
     }
 
     private void registerListeners() {
@@ -70,5 +77,9 @@ public final class MiniEssentials extends JavaPlugin {
 
     public TPAManager getTPAManager() {
         return tpaManager;
+    }
+
+    public TrashManager getTrashManager() {
+        return trashManager;
     }
 }

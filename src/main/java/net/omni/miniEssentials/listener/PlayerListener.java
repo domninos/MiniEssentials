@@ -1,13 +1,17 @@
 package net.omni.miniEssentials.listener;
 
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.omni.miniEssentials.MiniEssentials;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 
 import java.util.UUID;
 
@@ -36,12 +40,38 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        // cancel tpa
-
         UUID uuid = event.getPlayer().getUniqueId();
+
+        // cancel tpa
 
         if (plugin.getTPAManager().hasTPA(uuid))
             plugin.getTPAManager().removeRequests(uuid);
+
+        // has trash inv
+
+        if (plugin.getTrashManager().hasTrash(uuid))
+            plugin.getTrashManager().remove(uuid);
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        Inventory inv = event.getInventory();
+
+        if (!plugin.getTrashManager().isTrashInventory(inv))
+            return;
+
+        inv.clear();
+
+        Player player = (Player) event.getPlayer();
+
+        int amount = 0;
+
+        // TODO messages.yml
+        plugin.sendMessage(player, "<green>Successfully trashed <amount> items.</green>",
+                Placeholder.parsed("amount", amount + ""));
+
+        // TODO playSound
+        player.playSound(player, Sound.BLOCK_BAMBOO_WOOD_BREAK, 0.5f, 1f);
     }
 
     public void register() {
