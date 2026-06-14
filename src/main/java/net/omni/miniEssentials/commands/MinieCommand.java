@@ -77,7 +77,7 @@ public class MinieCommand implements CommandExecutor {
             MessageUtil.append("fix", "Restores the durability of your current item in main hand.", helpBuilder);
 
         if (sender.hasPermission("miniessentials.gm"))
-            MessageUtil.appendWithAliases("/gamemode <type> [player]", "Changes your gamemode or someone else's.", helpBuilder, "gm");
+            MessageUtil.appendWithAliases("gamemode <type> [player]", "Changes your gamemode or someone else's.", helpBuilder, "gm");
 
         if (sender.hasPermission("miniessentials.god"))
             MessageUtil.append("god [player]", "Gives you or someone else immunity to damage or hunger.", helpBuilder);
