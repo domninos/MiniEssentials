@@ -9,24 +9,36 @@ load: POSTWORLD
 authors: [ domninos ]
 
 commands:
+  minie:
+    usage: /<minie>
+    description: Base command for MiniEssentials.
   enderchest:
     usage: /<command> [player]
     description: Opens your enderchest or someone else's.
+    permission: miniessentials.echest
+    aliases: [echest, ec]
   fix:
     usage: /<command>
     description: Restores the durability of your current item in main hand.
+    permission: miniessentials.fix
   gamemode:
     usage: /<command> <type> [player]
     description: Changes your gamemode or someone else's gamemode.
+    permission: miniessentials.gm
+    aliases: [gm]
   god:
     usage: /<command> [player]
     description: Gives you or someone else immunity to damage or hunger.
+    permission: miniessentials.god
   openinv:
     usage: /<command> <player>
     description: Opens the player's inventory and enables you to edit in real-time.
+    permission: miniessentials.openinv
   tpa:
     usage: /<command> <player>
     description: Sends a teleport request to the player.
+    permission: miniessentials.tpa
   trash:
     usage: /<command>
     description: Opens a menu which lets you throw away items. All of the items which go in the menu are removed when the menu is closed.
+    permission: miniessentials.trash

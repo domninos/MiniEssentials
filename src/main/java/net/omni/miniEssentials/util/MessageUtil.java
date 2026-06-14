@@ -51,4 +51,47 @@ public class MessageUtil {
         else
             return LegacyComponentSerializer.legacyAmpersand().deserialize(msg);
     }
+
+    /**
+     * For my commands.
+     * Appends commands its description to a {@link StringBuilder}.
+     *
+     * @param command     the command label and arguments (without `/`)
+     * @param description description of the command
+     * @param builder     the {@link StringBuilder} to append to
+     */
+    public static void append(String command, String description, StringBuilder builder) {
+        builder.append("  <gold>/")
+                .append(command)
+                .append("</gold> <dark_gray>-</dark_gray> <gray>")
+                .append(description)
+                .append("</gray>")
+                .append("\n\n");
+    }
+
+    /**
+     * For my commands.
+     * Appends the plugin command labels, descriptions, and aliases to a {@link StringBuilder}.
+     *
+     * @param command     the command label and arguments (without `/`)
+     * @param description description of the command
+     * @param builder     the {@link StringBuilder} to append to
+     * @param aliases     command aliases (if any).
+     */
+    public static void appendWithAliases(String command, String description, StringBuilder builder, String... aliases) {
+        builder.append("  <gold>/")
+                .append(command)
+                .append("</gold> <dark_gray>-</dark_gray> <gray>")
+                .append(description)
+                .append("</gray>")
+                .append("\n\n");
+
+        if (aliases != null && aliases.length > 0) {
+            builder.append("  <dark_gray>↳ <italic>Aliases: ")
+                    .append(java.util.Arrays.toString(aliases))
+                    .append("</italic></dark_gray>\n");
+        }
+
+        builder.append("\n");
+    }
 }
