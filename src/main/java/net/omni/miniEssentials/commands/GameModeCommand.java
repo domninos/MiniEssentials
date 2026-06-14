@@ -4,12 +4,12 @@ import net.omni.miniEssentials.MiniEssentials;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+
+import java.util.List;
 
 public class GameModeCommand implements CommandExecutor {
     private final MiniEssentials plugin;
@@ -20,8 +20,8 @@ public class GameModeCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        if (sender instanceof Player player && !player.hasPermission("miniessentials.gm")) {
-            plugin.sendMessage(player, "<red>You do not have permission to use this command.</red>");
+        if (!sender.hasPermission("miniessentials.gm")) {
+            plugin.sendMessage(sender, "<red>You do not have permission to use this command.</red>");
             return true;
         }
 
@@ -30,13 +30,24 @@ public class GameModeCommand implements CommandExecutor {
             plugin.sendMessage(sender, "<red>Usage: /gamemode <type> [player]</red>");
             return true;
         } else {
-            GameMode gameMode;
+            GameMode gameMode = null;
 
             try {
                 gameMode = GameMode.valueOf(args[0].toUpperCase());
             } catch (IllegalArgumentException e) {
-                plugin.sendMessage(sender, "<red>Unknown gamemode</red>");
-                return true;
+                // ignore
+            }
+
+            if (gameMode == null) {
+                // still null
+                // try with value
+
+                try {
+                    gameMode = GameMode.getByValue(Integer.parseInt(args[1]));
+                } catch (NumberFormatException e) {
+                    plugin.sendMessage(sender, "<red>Invalid game mode.</red>");
+                    return true;
+                }
             }
 
             if (args.length == 1) {
@@ -76,6 +87,14 @@ public class GameModeCommand implements CommandExecutor {
             plugin.getLogger().warning("/gamemode command not found!");
             return;
         }
+
+        gameModeCommand.setTabCompleter(new TabCompleter() {
+            // TODO
+            @Override
+            public @NonNull List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
+                return List.of();
+            }
+        });
 
         gameModeCommand.setExecutor(this);
     }

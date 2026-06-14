@@ -38,7 +38,7 @@ public final class MiniEssentials extends JavaPlugin {
 
         registerListeners();
 
-        sendConsole("<green>Successfully enabled MiniEssentials-v" + getDescription().getVersion() + "</green>");
+        sendConsole("<green>Successfully enabled MiniEssentials-v" + getPluginMeta().getVersion() + "</green>");
     }
 
     private void registerCommands() {
@@ -49,6 +49,8 @@ public final class MiniEssentials extends JavaPlugin {
         new OpenInvCommand(this).register();
         new TPACommand(this).register();
         new TrashCommand(this).register();
+
+        new MinieCommand(this).register();
     }
 
     private void registerListeners() {
