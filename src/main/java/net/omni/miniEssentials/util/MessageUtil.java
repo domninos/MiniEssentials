@@ -87,7 +87,7 @@ public class MessageUtil {
                 .append("\n");
 
         if (aliases != null && aliases.length > 0)
-            builder.append("  <white>⤷ <italic>⤻Aliases: ")
+            builder.append("  <white> <italic>⤷Aliases: ")
                     .append(Arrays.toString(aliases))
                     .append("</italic></white>\n");
 

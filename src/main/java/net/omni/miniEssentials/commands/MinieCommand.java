@@ -86,7 +86,7 @@ public class MinieCommand implements CommandExecutor {
         StringBuilder helpBuilder = new StringBuilder();
 
         helpBuilder.append("<dark_gray>▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪</dark_gray>\n");
-        helpBuilder.append("  <gradient:#00AAFF:#55FFFF><bold>MiniEssentials</bold></gradient> <gray>• Help(")
+        helpBuilder.append("  <gradient:#00AAFF:#55FFFF><bold>MiniEssentials</bold></gradient> <gray>• Help (")
                 .append(page).append("/").append(totalPages).append(")</gray>\n\n");
 
         if (lines.isEmpty())
@@ -100,12 +100,22 @@ public class MinieCommand implements CommandExecutor {
         if (page > 1) {
             helpBuilder.append("<click:run_command:/minie help ").append(page - 1)
                     .append("><hover:show_text:'<gray>Click for page ").append(page - 1)
-                    .append("'><aqua><bold>[◀ Previous]</bold></aqua></hover></click>");
+                    .append("'><gray>[◀ Previous]</gray></hover></click>");
         } else {
             helpBuilder.append("<gray>[◀ Previous]</gray>");
         }
 
         helpBuilder.append("<dark_gray>▪▪▪▪▪▪▪▪ </dark_gray>");
+
+        if (page < totalPages) {
+            helpBuilder.append("<click:run_command:/minie help ").append(page + 1)
+                    .append("><hover:show_text:'<gray>Click for page ").append(page + 1)
+                    .append("'><aqua><bold>[Next ▶]</bold></aqua></hover></click>");
+        } else {
+            helpBuilder.append("<gray>[Next ▶]</gray>");
+        }
+
+        helpBuilder.append("<dark_gray> ▪▪▪▪▪▪▪▪</dark_gray>");
 
         sender.sendMessage(MessageUtil.parse(helpBuilder.toString()));
     }
@@ -133,12 +143,12 @@ public class MinieCommand implements CommandExecutor {
 
         if (sender.hasPermission("miniessentials.use")) {
             helpLines.add(MessageUtil.formatString("miniessentials", "Base command for MiniEssentials.", "minie"));
-            helpLines.add(MessageUtil.formatString("minie help", "Shows this help menu.", "minie"));
+            helpLines.add(MessageUtil.formatString("minie help", "Shows this help menu."));
 
             if (sender.hasPermission("miniessentials.reload"))
-                helpLines.add(MessageUtil.formatString("minie reload", "Reloads config and messages.", "minie"));
+                helpLines.add(MessageUtil.formatString("minie reload", "Reloads config and messages."));
 
-            helpLines.add(MessageUtil.formatString("minie about", "Shows basic information about this plugin.", "minie"));
+            helpLines.add(MessageUtil.formatString("minie about", "Shows basic information about this plugin."));
         }
 
         if (sender.hasPermission("miniessentials.echest"))
