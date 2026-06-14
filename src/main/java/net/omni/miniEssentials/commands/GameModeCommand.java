@@ -6,9 +6,13 @@ import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GameModeCommand implements CommandExecutor {
@@ -43,11 +47,16 @@ public class GameModeCommand implements CommandExecutor {
                 // try with value
 
                 try {
-                    gameMode = GameMode.getByValue(Integer.parseInt(args[1]));
+                    gameMode = GameMode.getByValue(Integer.parseInt(args[0]));
                 } catch (NumberFormatException e) {
                     plugin.sendMessage(sender, "<red>Invalid game mode.</red>");
                     return true;
                 }
+            }
+
+            if (gameMode == null) {
+                plugin.sendMessage(sender, "<red>Could not find gamemode.</red>");
+                return true;
             }
 
             if (args.length == 1) {
@@ -89,10 +98,19 @@ public class GameModeCommand implements CommandExecutor {
         }
 
         gameModeCommand.setTabCompleter(new TabCompleter() {
-            // TODO
             @Override
             public @NonNull List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-                return List.of();
+                if (args.length == 1) {
+                    List<String> subcommands = List.of(Arrays.toString(GameMode.values()));
+
+                    List<String> completions = new ArrayList<>();
+                    StringUtil.copyPartialMatches(args[0], subcommands, completions);
+
+                    Collections.sort(completions);
+                    return completions;
+                }
+
+                return Collections.emptyList();
             }
         });
 
