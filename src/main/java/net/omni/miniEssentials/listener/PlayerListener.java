@@ -3,6 +3,7 @@ package net.omni.miniEssentials.listener;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.omni.miniEssentials.MiniEssentials;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +13,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
@@ -60,18 +62,25 @@ public class PlayerListener implements Listener {
         if (!plugin.getTrashManager().isTrashInventory(inv))
             return;
 
-        inv.clear();
-
         Player player = (Player) event.getPlayer();
 
         int amount = 0;
+
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item == null || item.getType() == Material.AIR)
+                continue;
+
+            amount += item.getAmount();
+        }
 
         // TODO messages.yml
         plugin.sendMessage(player, "<green>Successfully trashed <amount> items.</green>",
                 Placeholder.parsed("amount", amount + ""));
 
-        // TODO playSound
+        // TODO playSound - config
         player.playSound(player, Sound.BLOCK_BAMBOO_WOOD_BREAK, 0.5f, 1f);
+
+        inv.clear();
     }
 
     public void register() {
