@@ -38,12 +38,10 @@ public class FixCommand implements CommandExecutor {
 
         ItemStack currentHand = player.getInventory().getItemInMainHand();
 
-        if (currentHand.getType() == Material.AIR || currentHand.getItemMeta() instanceof Damageable) {
+        if (currentHand.getType() == Material.AIR || !(currentHand.getItemMeta() instanceof Damageable damageable)) {
             plugin.sendMessage(player, "<red>Could not fix item. Please try a different item.</red>");
             return true;
         }
-
-        Damageable damageable = (Damageable) currentHand.getItemMeta();
 
         damageable.setDamage(0);
 
