@@ -27,13 +27,15 @@ public class ConfigUtil {
     public void reloadConfig() {
         plugin.reloadConfig();
         loadConfig();
+
+        // refresh trash
+        plugin.getTrashManager().flush();
     }
 
     public void loadConfig() {
         loadSounds();
 
         FileConfiguration config = plugin.getConfig();
-
 
         int savedDefaults = 0;
 
@@ -86,8 +88,10 @@ public class ConfigUtil {
         }
 
         this.trash_inv_size = config.getInt("trash_inv.size");
-        if (trash_inv_size == 0) {
+        if (trash_inv_size == 0 || this.trash_inv_size < 9 || this.trash_inv_size > 54) {
             this.trash_inv_size = 27;
+
+            plugin.sendConsole("<yellow>Warning! Trash Inventory size is out of bounds. Only multiples of 9 and less than 54 can be set.</yellow>");
 
             config.set("trash_inv.size", trash_inv_size);
             savedDefaults++;

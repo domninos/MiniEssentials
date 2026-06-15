@@ -40,6 +40,20 @@ public class TrashManager {
         return trashInventory;
     }
 
+    public void flush() {
+        if (!trashInventories.isEmpty()) {
+            trashInventories.keySet().forEach(uuid -> {
+                Player player = Bukkit.getPlayer(uuid);
+
+                if (player != null && player.isOnline())
+                    player.closeInventory();
+            });
+
+            trashInventories.values().forEach(Inventory::clear);
+            trashInventories.clear();
+        }
+    }
+
     public boolean isTrashInventory(Inventory inventory) {
         return inventory != null && inventory.getHolder() instanceof TrashInventoryHolder;
     }
@@ -53,13 +67,6 @@ public class TrashManager {
 
         if (inv != null)
             inv.clear();
-    }
-
-    public void flush() {
-        if (!trashInventories.isEmpty()) {
-            trashInventories.values().forEach(Inventory::clear);
-            trashInventories.clear();
-        }
     }
 
     private static class TrashInventoryHolder implements InventoryHolder {
