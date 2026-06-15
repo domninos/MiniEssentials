@@ -1,6 +1,7 @@
 package net.omni.miniEssentials.commands;
 
 import net.omni.miniEssentials.MiniEssentials;
+import net.omni.miniEssentials.util.Messages;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,12 +19,12 @@ public class TrashCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (!(sender instanceof Player player)) {
-            plugin.sendMessage(sender, "<red>Only players can use this command.</red>");
+            plugin.sendMessage(sender, Messages.ONLY_PLAYERS.toString());
             return true;
         }
 
         if (!player.hasPermission("miniessentials.trash")) {
-            plugin.sendMessage(player, "<red>You do not have permission to use this command.</red>");
+            plugin.sendMessage(player, Messages.NO_PERMS.toString());
             return true;
         }
 

@@ -18,18 +18,22 @@ public class MiniConfig {
         this.plugin = plugin;
 
         if (plugin.getDataFolder().mkdir())
-            plugin.sendConsole("&aSuccessfully created .../MiniConfig");
+            plugin.sendConsole("<green>Successfully created .../MiniConfig</green>");
 
         this.configName = fileName;
 
         this.file = new File(plugin.getDataFolder(), fileName);
 
-        if (!(file.exists())) {
+        reload();
+    }
+
+    public void reload() {
+        if (!file.exists()) {
             try {
-                plugin.saveResource(fileName, false);
-                plugin.sendConsole("&aSuccessfully created " + fileName);
+                plugin.saveResource(configName, false);
+                plugin.sendConsole("<green>Successfully created " + configName + "</green>");
             } catch (Exception e) {
-                plugin.getLogger().warning("Could not create " + fileName);
+                plugin.getLogger().warning("Could not create " + configName);
             }
         }
 
@@ -63,14 +67,5 @@ public class MiniConfig {
 
     public List<String> getStringList(String path) {
         return getConfig().getStringList(path);
-    }
-
-    public void reload() {
-        if (!file.exists()) {
-            plugin.saveResource(configName, false);
-            plugin.sendConsole("&aSuccessfully created " + configName);
-        }
-
-        this.config = YamlConfiguration.loadConfiguration(file);
     }
 }

@@ -1,8 +1,8 @@
 package net.omni.miniEssentials.commands;
 
 import net.omni.miniEssentials.MiniEssentials;
+import net.omni.miniEssentials.util.Messages;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,12 +20,12 @@ public class EnderChestCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (!(sender instanceof Player player)) {
-            plugin.sendMessage(sender, "<red>Only players can use this command.</red>");
+            plugin.sendMessage(sender, Messages.ONLY_PLAYERS.toString());
             return true;
         }
 
         if (!(player.hasPermission("miniessentials.echest"))) {
-            plugin.sendMessage(player, "<red>You do not have permission to use this command.</red>");
+            plugin.sendMessage(player, Messages.NO_PERMS.toString());
             return true;
         }
 
@@ -33,20 +33,20 @@ public class EnderChestCommand implements CommandExecutor {
             player.openInventory(player.getEnderChest());
         } else if (args.length == 1) {
             if (!(player.hasPermission("miniessentials.echest.other"))) {
-                plugin.sendMessage(player, "<red>You do not have permission to use this command.</red>");
+                plugin.sendMessage(player, Messages.NO_PERMS.toString());
                 return true;
             }
 
             Player target = Bukkit.getPlayerExact(args[0]);
 
-            if (target == null || target.getPlayer() == null || !target.hasPlayedBefore() || !target.isOnline()) {
-                plugin.sendMessage(sender, "<red>Player " + args[0] + " is not online.</red>");
+            if (target == null || !target.hasPlayedBefore() || !target.isOnline()) {
+                plugin.sendMessage(sender, Messages.PLAYER_NOT_ONLINE.replace("player", args[0]));
                 return true;
             }
 
-            player.openInventory(target.getPlayer().getEnderChest());
+            player.openInventory(target.getEnderChest());
         } else {
-            plugin.sendMessage(sender, "<red>Usage: /enderchest [player]</red>");
+            plugin.sendMessage(sender, Messages.USAGE.replace("usage", "/enderchest [player]"));
             return true;
         }
 

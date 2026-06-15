@@ -1,7 +1,7 @@
 package net.omni.miniEssentials.listener;
 
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.omni.miniEssentials.MiniEssentials;
+import net.omni.miniEssentials.util.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -77,9 +77,7 @@ public class PlayerListener implements Listener {
         if (amount == 0)
             return;
 
-        // TODO messages.yml
-        plugin.sendMessage(player, "<green>Successfully trashed <amount> item(s).</green>",
-                Placeholder.parsed("amount", amount + ""));
+        plugin.sendMessage(player, Messages.TRASHED_SUCCESS.replace("amount", String.valueOf(amount)));
 
         // TODO playSound - config
         player.playSound(player, Sound.BLOCK_BAMBOO_WOOD_BREAK, 0.5f, 1f);

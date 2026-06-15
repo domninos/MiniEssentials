@@ -2,6 +2,7 @@ package net.omni.miniEssentials.listener;
 
 import io.papermc.paper.event.player.PlayerSwapWithEquipmentSlotEvent;
 import net.omni.miniEssentials.MiniEssentials;
+import net.omni.miniEssentials.util.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -54,7 +55,8 @@ public class OpenInvListener implements Listener {
 
         if (target == null || !target.isOnline()) {
             opener.closeInventory();
-            plugin.sendMessage(opener, "<red>Player went offline.</red>");
+
+            plugin.sendMessage(opener, Messages.PLAYER_NOT_ONLINE.replace("player", "Player"));
             return;
         }
 

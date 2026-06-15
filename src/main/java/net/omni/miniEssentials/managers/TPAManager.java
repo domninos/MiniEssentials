@@ -1,9 +1,7 @@
 package net.omni.miniEssentials.managers;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.omni.miniEssentials.MiniEssentials;
-import net.omni.miniEssentials.util.MessageUtil;
+import net.omni.miniEssentials.util.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -36,7 +34,7 @@ public class TPAManager {
             return;
 
         if (fromPlayer.equals(toPlayer)) {
-            plugin.sendMessage(player, "<red>You cannot use this on yourself.</red>");
+            plugin.sendMessage(player, Messages.CANNOT_USE_SELF.toString());
             return;
         }
 
@@ -47,29 +45,14 @@ public class TPAManager {
 
             String cd = timeLeft > 1 ? timeLeft + " seconds" : timeLeft + " second";
 
-            plugin.sendMessage(player, "<red>You already have an ongoing TPA request. Please wait for " + cd + ".</red>");
+            plugin.sendMessage(player, Messages.TPA_ALREADY.replace("time_left", cd));
             return;
         }
 
-        // TODO messages.yml
-        String miniMessageString = """
-                
-                <yellow><from_player></yellow> is requesting to teleport to you.
-                <bold><click:run_command:/tpa accept <from_player>><hover:show_text:'<green>Click to accept'><green>[ACCEPT]</green></hover></click></bold> \
-                 <bold><click:run_command:/tpa deny <from_player>><hover:show_text:'<red>Click to deny'><red>[DENY]</red></hover></click></bold>
-                
-                """;
-
-        // TODO messages.yml -> use placeholder: 'from_player'. then, make run_command editable as wel as the hover text + main text (accept/deny)
-
-        Component text = MessageUtil.parse(miniMessageString, Placeholder.parsed("from_player", player.getName()));
-
-        targetPlayer.sendMessage(text);
+        plugin.sendMessage(targetPlayer, Messages.TPA_REQUEST_TO.replaceList("from_player", player.getName()), false);
 
         // TODO messages.yml
-        plugin.sendMessage(player,
-                "<yellow>You have sent <to_player> a TPA request.</yellow>",
-                Placeholder.parsed("to_player", targetPlayer.getName()));
+        plugin.sendMessage(player, Messages.TPA_REQUEST_FROM.replace("to_player", targetPlayer.getName()));
 
         tpaTasks.put(fromPlayer, Bukkit.getScheduler().runTaskLater(plugin, () -> {
             Set<UUID> requests = getTPARequests(toPlayer);
@@ -81,8 +64,8 @@ public class TPAManager {
 
             tpaTasks.remove(fromPlayer);
 
-            if (player.isOnline())
-                plugin.sendMessage(player, "<red>Your TPA request to " + targetPlayer.getName() + " has expired.</red>");
+            if (player.isOnline() && targetPlayer.isOnline())
+                plugin.sendMessage(player, Messages.TPA_REQUEST_EXPIRED.replace("to_player", targetPlayer.getName()));
         }, 20 * 30)); // TODO config - default: 30 seconds
 
         tpaCooldowns.put(fromPlayer, System.currentTimeMillis() + (30 * 1000)); // TODO config
@@ -122,7 +105,7 @@ public class TPAManager {
             return;
 
         if (!hasTPA(fromPlayer, toPlayer)) {
-            plugin.sendMessage(targetPlayer, "<red>Could not find your TPA request. Please try again.</red>");
+            plugin.sendMessage(targetPlayer, Messages.TPA_NOT_FOUND.toString());
             return;
         }
 
@@ -130,8 +113,7 @@ public class TPAManager {
 
         removeRequestFromPlayer(fromPlayer, toPlayer);
 
-        // TODO messages.yml
-        plugin.sendMessage(player, "<yellow>You have teleported to " + targetPlayer.getName() + "'s location.</yellow>");
+        plugin.sendMessage(player, Messages.TPA_ACCEPT.replace("to_player", targetPlayer.getName()));
     }
 
     public void removeRequestFromPlayer(UUID player, UUID toPlayer) {
@@ -159,14 +141,13 @@ public class TPAManager {
             return;
 
         if (!hasTPA(fromPlayer, toPlayer)) {
-            plugin.sendMessage(targetPlayer, "<red>Could not find your TPA request. Please try again.</red>");
+            plugin.sendMessage(targetPlayer, Messages.TPA_NOT_FOUND.toString());
             return;
         }
 
         removeRequestFromPlayer(fromPlayer, toPlayer);
 
-        // TODO messages.yml
-        plugin.sendMessage(player, "<red>Your TPA request to " + targetPlayer.getName() + " was denied.</red>");
+        plugin.sendMessage(player, Messages.TPA_DENY.replace("palyer", targetPlayer.getName()));
     }
 
     public void removeRequests(UUID player) {

@@ -1,6 +1,7 @@
 package net.omni.miniEssentials.commands;
 
 import net.omni.miniEssentials.MiniEssentials;
+import net.omni.miniEssentials.util.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,24 +22,24 @@ public class TPACommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (!(sender instanceof Player player)) {
-            plugin.sendMessage(sender, "<red>Only players can use this command.</red>");
+            plugin.sendMessage(sender, Messages.ONLY_PLAYERS.toString());
             return true;
         }
 
         if (!(player.hasPermission("miniessentials.tpa"))) {
-            plugin.sendMessage(player, "<red>You do not have permission to use this command.</red>");
+            plugin.sendMessage(player, Messages.NO_PERMS.toString());
             return true;
         }
 
         if (args.length == 0) {
-            plugin.sendMessage(sender, "<red>Invalid arguments. Usage: /tpa <player></red>");
+            plugin.sendMessage(sender, Messages.USAGE.replace("usage", "/tpa <player>"));
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("accept")) {
                 UUID latest = plugin.getTPAManager().getLatestTPA(player.getUniqueId());
 
                 if (latest == null || Bukkit.getPlayer(latest) == null) {
-                    plugin.sendMessage(player, "<red>No TPA found.</red>");
+                    plugin.sendMessage(player, Messages.TPA_NONE.toString());
                     return true;
                 }
 
@@ -47,7 +48,7 @@ public class TPACommand implements CommandExecutor {
                 UUID latest = plugin.getTPAManager().getLatestTPA(player.getUniqueId());
 
                 if (latest == null || Bukkit.getPlayer(latest) == null) {
-                    plugin.sendMessage(player, "<red>No TPA found.</red>");
+                    plugin.sendMessage(player, Messages.TPA_NONE.toString());
                     return true;
                 }
 
@@ -56,7 +57,7 @@ public class TPACommand implements CommandExecutor {
                 Player target = Bukkit.getPlayerExact(args[0]);
 
                 if (target == null || target.getPlayer() == null || !target.hasPlayedBefore() || !target.isOnline()) {
-                    plugin.sendMessage(sender, "<red>Player " + args[0] + " is not online.</red>");
+                    plugin.sendMessage(sender, Messages.PLAYER_NOT_ONLINE.replace("player", args[0]));
                     return true;
                 }
 
@@ -64,19 +65,19 @@ public class TPACommand implements CommandExecutor {
                 return true;
             }
 
-            plugin.sendMessage(player, "<red>Unknown command.</red>");
+            plugin.sendMessage(player, Messages.UNKNOWN_COMMAND.toString());
             return true;
         } else if (args.length == 2) {
             // /tpa accept|deny <player>
             if (!(args[0].equalsIgnoreCase("accept") || args[0].equalsIgnoreCase("deny"))) {
-                plugin.sendMessage(player, "<red>Unknown command.</red>");
+                plugin.sendMessage(player, Messages.UNKNOWN_COMMAND.toString());
                 return true;
             }
 
             Player target = Bukkit.getPlayerExact(args[1]);
 
-            if (target == null || target.getPlayer() == null || !target.hasPlayedBefore() || !target.isOnline()) {
-                plugin.sendMessage(sender, "<red>Player " + args[1] + " is not online.</red>");
+            if (target == null || !target.hasPlayedBefore() || !target.isOnline()) {
+                plugin.sendMessage(sender, Messages.PLAYER_NOT_ONLINE.replace("player", args[1]));
                 return true;
             }
 
@@ -87,7 +88,7 @@ public class TPACommand implements CommandExecutor {
 
             return true;
         } else {
-            plugin.sendMessage(sender, "<red>Unknown command.</red>");
+            plugin.sendMessage(sender, Messages.UNKNOWN_COMMAND.toString());
             return true;
         }
     }

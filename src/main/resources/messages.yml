@@ -1,17 +1,18 @@
 no_perms: "<red>You do not have permission to use this command.</red>"
 only_players: "<red>Only players can use this command.</red>"
-player_not_online: "<red>Player {player} is not online.</red>"
+player_not_online: "<red>%player% is not online.</red>"
 
-usage: "<red>Invalid arguments. Usage: {usage}</red>"
+usage: "<red>Invalid arguments. Usage: %usage%</red>"
 unknown_cmd: "<red>Unknown command.</red>"
 
 fix_error: "<red>Could not fix item. Please try a different item.</red>"
 fix_success: "<green>Successfully fixed your item!</green>"
 
 gm_not_found: "<red>Could not find gamemode.</red>"
-gm_set: "<yellow>{player} is now in {gamemode} MODE.</yellow>"
+gm_set_self: "<yellow>You are now in %gamemode% MODE.</yellow>"
+gm_set_other: "<yellow>%player% is now in %gamemode% MODE.</yellow>"
 
-god_toggled: "<green>Successfully toggled GOD for {player}.</green>"
+god_toggled: "<green>Successfully toggled GOD for %player%.</green>"
 god_enabled: "<green>You are now in GOD mode!</green>"
 god_disabled: "<red>You are not in GOD mod anymore.</red>"
 
@@ -19,19 +20,20 @@ reloaded: "<green>config.yml and messages.yml have been reloaded.</green>"
 invalid_page: "<red>Invalid page number. Defaulting to page 1.</red>"
 
 cannot_use_self: "<red>You cannot use this on yourself.</red>"
+cannot_shift_click: "<red>You cannot shift-click items.</red>"
 
 tpa_not_found: "<red>Could not find your TPA request. Please try again.</red>"
 tpa_request_to:
   - ""
-  - "          <yellow><from_player></yellow> is requesting to teleport to you."
-  - "           <bold><click:run_command:/tpa accept <from_player>><hover:show_text:'<green>Click to accept'><green>[ACCEPT]</green></hover></click></bold> \
-                 <bold><click:run_command:/tpa deny <from_player>><hover:show_text:'<red>Click to deny'><red>[DENY]</red></hover></click></bold>"
+  - "          <yellow>%from_player%</yellow> is requesting to teleport to you."
+  - "           <bold><click:run_command:/tpa accept %from_player%><hover:show_text:'<green>Click to accept'><green>[ACCEPT]</green></hover></click></bold> \
+                 <bold><click:run_command:/tpa deny %from_player%><hover:show_text:'<red>Click to deny'><red>[DENY]</red></hover></click></bold>"
   - ""
-tpa_request_from: "<yellow>You have sent <to_player> a TPA request.</yellow>"
-tpa_request_expired: "<red>Your TPA request to {player} has expired.</red>"
-tpa_already: "<red>You already have an ongoing TPA request. Please wait for {time_left}.</red>"
+tpa_request_from: "<yellow>You have sent %to_player% a TPA request.</yellow>"
+tpa_request_expired: "<red>Your TPA request to %to_player% has expired.</red>"
+tpa_already: "<red>You already have an ongoing TPA request. Please wait for %time_left%.</red>"
 tpa_none: "<red>No TPA found.</red>"
-tpa_accept: "<yellow>You have teleported to {player}'s location."
-tpa_deny: "<red>Your TPA request to {player} was denied.</red>"
+tpa_accept: "<yellow>You have teleported to %to_player%'s location."
+tpa_deny: "<red>Your TPA request to %to_player% was denied.</red>"
 
-trashed_success: "<green>Successfully trashed <amount> item(s).</green>"
+trashed_success: "<green>Successfully trashed %amount% item(s).</green>"

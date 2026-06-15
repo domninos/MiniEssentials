@@ -82,6 +82,10 @@ public final class MiniEssentials extends JavaPlugin {
         sender.sendMessage(MessageUtil.color(message));
     }
 
+    public void sendMessage(CommandSender sender, String message, boolean prefix) {
+        sender.sendMessage(prefix ? MessageUtil.color(message) : MessageUtil.parse(message));
+    }
+
     public void sendConsole(String message, TagResolver... resolvers) {
         sendMessage(Bukkit.getConsoleSender(), message, resolvers);
     }

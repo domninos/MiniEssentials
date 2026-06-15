@@ -1,6 +1,7 @@
 package net.omni.miniEssentials.managers;
 
 import net.omni.miniEssentials.MiniEssentials;
+import net.omni.miniEssentials.util.Messages;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -18,10 +19,10 @@ public class GodManager {
     public void toggleGod(Player player) {
         if (isGod(player)) {
             removeGod(player);
-            plugin.sendMessage(player, "<red>You are not in GOD mod anymore.</red>");
+            plugin.sendMessage(player, Messages.GOD_DISABLED.toString());
         } else {
             setGod(player);
-            plugin.sendMessage(player, "<green>You are now in GOD mode!</green>");
+            plugin.sendMessage(player, Messages.GOD_ENABLED.toString());
         }
     }
 

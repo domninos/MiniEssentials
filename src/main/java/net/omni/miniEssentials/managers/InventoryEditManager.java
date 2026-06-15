@@ -3,6 +3,7 @@ package net.omni.miniEssentials.managers;
 import net.kyori.adventure.text.Component;
 import net.omni.miniEssentials.MiniEssentials;
 import net.omni.miniEssentials.util.MessageUtil;
+import net.omni.miniEssentials.util.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -40,10 +41,10 @@ public class InventoryEditManager {
         inv.setItem(48, target.getInventory().getBoots());
         inv.setItem(49, target.getInventory().getItemInOffHand());
 
+        // TODO config title unused slots / panes
         ItemStack lockedPane = createNamedPane(Material.RED_STAINED_GLASS_PANE, "<red>Unused Slot</red>");
-        for (int i = 50; i < 54; i++) {
+        for (int i = 50; i < 54; i++)
             inv.setItem(i, lockedPane);
-        }
 
         activeViewers.put(opener.getUniqueId(), target.getUniqueId());
         opener.openInventory(inv);
@@ -54,6 +55,7 @@ public class InventoryEditManager {
         for (int i = 0; i < 36; i++)
             inv.setItem(i, targetInv.getItem(i));
 
+        // TODO config title unused slots / panes
         inv.setItem(36, createNamedPane(Material.GRAY_STAINED_GLASS_PANE, "<yellow>↓ Helmet Slot ↓</yellow>"));
         inv.setItem(37, createNamedPane(Material.GRAY_STAINED_GLASS_PANE, "<yellow>↓ Chestplate Slot ↓</yellow>"));
         inv.setItem(38, createNamedPane(Material.GRAY_STAINED_GLASS_PANE, "<yellow>↓ Leggings Slot ↓</yellow>"));
@@ -79,7 +81,8 @@ public class InventoryEditManager {
         long currentTime = System.currentTimeMillis();
 
         errorCooldowns.put(player.getUniqueId(), currentTime);
-        plugin.sendMessage(player, "<red>You cannot shift-click items.</red>");
+
+        plugin.sendMessage(player, Messages.CANNOT_SHIFT_CLICK.toString());
     }
 
     public boolean shouldSendWarning(Player player) {

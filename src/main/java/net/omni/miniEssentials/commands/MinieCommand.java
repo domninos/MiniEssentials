@@ -2,6 +2,7 @@ package net.omni.miniEssentials.commands;
 
 import net.omni.miniEssentials.MiniEssentials;
 import net.omni.miniEssentials.util.MessageUtil;
+import net.omni.miniEssentials.util.Messages;
 import org.bukkit.command.*;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +23,7 @@ public class MinieCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (!(sender.hasPermission("miniessentials.use"))) {
-            plugin.sendMessage(sender, "<red>You do not have permission to use this command.</red>");
+            plugin.sendMessage(sender, Messages.NO_PERMS.toString());
             return true;
         }
 
@@ -33,25 +34,26 @@ public class MinieCommand implements CommandExecutor {
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("reload")) {
                 if (!(sender.hasPermission("miniessentials.reload"))) {
-                    plugin.sendMessage(sender, "<red>You do not have permission to use this command.</red>");
+                    plugin.sendMessage(sender, Messages.NO_PERMS.toString());
                     return true;
                 }
 
                 plugin.reloadConfig();
 
-                // TODO reload messages.yml
-                plugin.sendMessage(sender, "<green>Messages have been reloaded.</green>");
+                plugin.getMessagesManager().loadMessages();
+                plugin.sendMessage(sender, "<green>config.yml and messages.yml have been reloaded.</green>");
+
             } else if (args[0].equalsIgnoreCase("about"))
                 sender.sendMessage(MessageUtil.parse(getAboutText()));
             else if (args[0].equalsIgnoreCase("help"))
                 sendHelpPage(sender, 1);
             else
-                plugin.sendMessage(sender, "<red>Unknown command.</red>");
+                plugin.sendMessage(sender, Messages.UNKNOWN_COMMAND.toString());
 
             return true;
         } else if (args.length == 2) {
             if (!(args[0].equalsIgnoreCase("help"))) {
-                plugin.sendMessage(sender, "<red>Unknown command.</red>");
+                plugin.sendMessage(sender, Messages.UNKNOWN_COMMAND.toString());
                 return true;
             }
 
@@ -60,14 +62,14 @@ public class MinieCommand implements CommandExecutor {
             try {
                 page = Integer.parseInt(args[1]);
             } catch (NumberFormatException e) {
-                plugin.sendMessage(sender, "<red>Invalid page number. Defaulting to page 1.</red>");
+                plugin.sendMessage(sender, Messages.INVALID_PAGE.toString());
             }
 
             sendHelpPage(sender, page);
             return true;
         }
 
-        plugin.sendMessage(sender, "<red>Unknown command.</red>");
+        plugin.sendMessage(sender, Messages.UNKNOWN_COMMAND.toString());
         return true;
     }
 
@@ -200,7 +202,6 @@ public class MinieCommand implements CommandExecutor {
                     List<String> completions = new ArrayList<>();
                     StringUtil.copyPartialMatches(args[0], subcommands, completions);
 
-                    Collections.sort(completions);
                     return completions;
                 }
 

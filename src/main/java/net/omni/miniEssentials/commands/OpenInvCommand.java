@@ -1,6 +1,7 @@
 package net.omni.miniEssentials.commands;
 
 import net.omni.miniEssentials.MiniEssentials;
+import net.omni.miniEssentials.util.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,33 +20,33 @@ public class OpenInvCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (!(sender instanceof Player player)) {
-            plugin.sendMessage(sender, "<red>Only players can use this command!</red>");
+            plugin.sendMessage(sender, Messages.ONLY_PLAYERS.toString());
             return true;
         }
 
         if (!(player.hasPermission("miniessentials.openinv"))) {
-            plugin.sendMessage(player, "<red>You do not have permission to use this command.</red>");
+            plugin.sendMessage(player, Messages.NO_PERMS.toString());
             return true;
         }
 
         if (args.length != 1) {
-            plugin.sendMessage(player, "<red>Invalid arguments. Usage: /openinv <player></red>");
+            plugin.sendMessage(player, Messages.USAGE.replace("usage", "/openinv <player>"));
             return true;
         }
 
         Player target = Bukkit.getPlayerExact(args[0]);
 
-        if (target == null || target.getPlayer() == null || !target.hasPlayedBefore() || !target.isOnline()) {
-            plugin.sendMessage(sender, "<red>Player " + args[0] + " is not online.</red>");
+        if (target == null || !target.hasPlayedBefore() || !target.isOnline()) {
+            plugin.sendMessage(sender, Messages.PLAYER_NOT_ONLINE.replace("player", args[0]));
             return true;
         }
 
         if (player.getUniqueId().equals(target.getUniqueId())) {
-            plugin.sendMessage(player, "<red>You cannot use this on yourself.</red>");
+            plugin.sendMessage(player, Messages.CANNOT_USE_SELF.toString());
             return true;
         }
 
-        plugin.getInventoryEditManager().openInv(player, target.getPlayer());
+        plugin.getInventoryEditManager().openInv(player, target);
         return true;
     }
 
