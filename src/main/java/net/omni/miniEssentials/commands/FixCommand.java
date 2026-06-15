@@ -39,7 +39,10 @@ public class FixCommand implements CommandExecutor {
 
         ItemStack currentHand = player.getInventory().getItemInMainHand();
 
-        if (currentHand.getType() == Material.AIR || !(currentHand.getItemMeta() instanceof Damageable damageable)) {
+        if (currentHand.getType() == Material.AIR
+                || !(currentHand.getItemMeta() instanceof Damageable damageable)
+                || currentHand.getType().getMaxDurability() <= 0
+                || damageable.getDamage() == 0) {
             player.playSound(Sounds.FIX_ERROR.getSound());
             plugin.sendMessage(player, Messages.FIX_ERROR.toString());
             return true;
