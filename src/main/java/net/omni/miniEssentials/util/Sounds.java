@@ -22,7 +22,7 @@ public enum Sounds {
         this.defaultVal = defaultVal.contains(":") ? defaultVal : "minecraft:" + defaultVal;
     }
 
-    public void loadSound(FileConfiguration config, Logger logger) {
+    public void  loadSound(FileConfiguration config, Logger logger) {
         Key fallback = Key.key(this.defaultVal);
 
         String sound_name = config.getString(path + ".key", fallback.asString());
