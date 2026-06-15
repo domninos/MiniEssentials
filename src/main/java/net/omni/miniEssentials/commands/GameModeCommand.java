@@ -8,7 +8,7 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,7 +74,7 @@ public class GameModeCommand implements CommandExecutor {
 
                 Player target = Bukkit.getPlayerExact(args[1]);
 
-                if (target == null|| !target.hasPlayedBefore() || !target.isOnline()) {
+                if (target == null || !target.hasPlayedBefore() || !target.isOnline()) {
                     plugin.sendMessage(sender, Messages.PLAYER_NOT_ONLINE.replace("player", args[1]));
                     return true;
                 }
@@ -98,8 +98,11 @@ public class GameModeCommand implements CommandExecutor {
 
         gameModeCommand.setTabCompleter(new TabCompleter() {
             @Override
-            public @NonNull List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
+            public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
                 if (args.length == 1) {
+                    if (!sender.hasPermission("miniessentials.gm"))
+                        return Collections.emptyList();
+
                     List<String> subcommands = new ArrayList<>();
 
                     subcommands.add("survival");
@@ -111,6 +114,11 @@ public class GameModeCommand implements CommandExecutor {
                     StringUtil.copyPartialMatches(args[0], subcommands, completions);
 
                     return completions;
+                }
+
+                if (args.length == 2) {
+                    if (sender.hasPermission("miniessentials.gm"))
+                        return null;
                 }
 
                 return Collections.emptyList();
