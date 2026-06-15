@@ -1,3 +1,9 @@
+###
+# These are the sounds that will play when a command or something was triggered by a player.
+#
+# IMPORTANT: USE THE KEYS FROM THIS WEBSITE https://www.digminecraft.com/lists/sound_list_pc.php
+###
+
 sounds:
   fix_success:
     key: block.anvil.use
@@ -8,7 +14,7 @@ sounds:
     volume: 0.4
     pitch: 1
   trashed:
-    key: block.bamboo_wood.break
+    key: block.anvil.break
     volume: 0.5
     pitch: 1
 

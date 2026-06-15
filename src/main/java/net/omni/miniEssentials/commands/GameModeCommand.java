@@ -72,10 +72,10 @@ public class GameModeCommand implements CommandExecutor {
                     return true;
                 }
 
-                Player target = Bukkit.getPlayerExact(args[0]);
+                Player target = Bukkit.getPlayerExact(args[1]);
 
                 if (target == null|| !target.hasPlayedBefore() || !target.isOnline()) {
-                    plugin.sendMessage(sender, Messages.PLAYER_NOT_ONLINE.replace("player", args[0]));
+                    plugin.sendMessage(sender, Messages.PLAYER_NOT_ONLINE.replace("player", args[1]));
                     return true;
                 }
 

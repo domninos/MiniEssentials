@@ -7,7 +7,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class ConfigUtil {
 
     private final MiniEssentials plugin;
-    private final FileConfiguration config;
 
     private int tpaCooldown;
     private String open_inv_title;
@@ -23,7 +22,6 @@ public class ConfigUtil {
 
     public ConfigUtil(MiniEssentials plugin) {
         this.plugin = plugin;
-        this.config = plugin.getConfig();
     }
 
     public void reloadConfig() {
@@ -34,53 +32,72 @@ public class ConfigUtil {
     public void loadConfig() {
         loadSounds();
 
+        FileConfiguration config = plugin.getConfig();
+
+
         int savedDefaults = 0;
 
         this.tpaCooldown = config.getInt("tpa.cooldown");
         if (tpaCooldown == 0) {
-            config.set("tpa.cooldown", 30);
+            this.tpaCooldown = 30;
+
+            config.set("tpa.cooldown", tpaCooldown);
             savedDefaults++;
         }
 
         this.open_inv_title = config.getString("open_inv.title");
         if (open_inv_title == null) {
-            config.set("open.inv.title", "Viewing: %player%'s Inventory");
+            this.open_inv_title = "Viewing: %player%'s Inventory";
+
+            config.set("open_inv.title", open_inv_title);
             savedDefaults++;
         }
 
         this.unused_pane_material = config.getString("open_inv.unused_pane.material");
         if (unused_pane_material == null) {
-            config.set("open_inv.unused_pane.material", "RED_STAINED_GLASS_PANE");
+            this.unused_pane_material = "RED_STAINED_GLASS_PANE";
+
+            config.set("open_inv.unused_pane.material", unused_pane_material);
             savedDefaults++;
         }
 
         this.unused_pane_display_name = config.getString("open_inv.unused_pane.display_name");
         if (unused_pane_display_name == null) {
-            config.set("open_inv.unused_pane.display_name", "<red>Unused Slot</red>");
+            this.unused_pane_display_name = "<red>Unused Slot</red>";
+
+            config.set("open_inv.unused_pane.display_name", unused_pane_display_name);
             savedDefaults++;
         }
 
         this.armor_pane_material = config.getString("open_inv.armor_pane.material");
         if (armor_pane_material == null) {
-            config.set("open_inv.armor_pane.material", "GRAY_STAINED_GLASS_PANE");
+            this.armor_pane_material = "GRAY_STAINED_GLASS_PANE";
+
+            config.set("open_inv.armor_pane.material", armor_pane_material);
             savedDefaults++;
         }
 
         this.armor_pane_display_name = config.getString("open_inv.armor_pane.display_name");
         if (armor_pane_display_name == null) {
-            config.set("open_inv.armor_pane.display_name", "<yellow>↓ %armor% Slot ↓</yellow>");
+            this.armor_pane_display_name = "<yellow>↓ %armor% Slot ↓</yellow>";
+
+            config.set("open_inv.armor_pane.display_name", armor_pane_display_name);
             savedDefaults++;
         }
 
-        this.trash_inv_size = config.getInt("trash.inv.size");
+        this.trash_inv_size = config.getInt("trash_inv.size");
         if (trash_inv_size == 0) {
-            config.set("trash.inv.size", 27);
+            this.trash_inv_size = 27;
+
+            config.set("trash_inv.size", trash_inv_size);
             savedDefaults++;
         }
 
         this.trash_inv_title = config.getString("trash_inv.title");
         if (trash_inv_title == null) {
-            config.set("trash.inv.title", "<green>Trash Manager</green>");
+            this.trash_inv_title = "<green>Trash Manager</green>";
+
+            config.set("trash_inv.title", trash_inv_title);
             savedDefaults++;
         }
 
@@ -92,12 +109,14 @@ public class ConfigUtil {
     }
 
     public void loadSounds() {
+        FileConfiguration config = plugin.getConfig();
+
         int savedDefaults = 0;
 
         for (Sounds sound : Sounds.values()) {
-            if (!config.contains(sound.getPath() + ".sound")) {
-                config.set(sound.getPath() + ".sound", sound);
-                config.set(sound.getPath() + ".pitch", 0.4f);
+            if (!config.contains(sound.getPath() + ".key")) {
+                config.set(sound.getPath() + ".key", sound.getDefaultVal());
+                config.set(sound.getPath() + ".volume", 0.4f);
                 config.set(sound.getPath() + ".pitch", 1.0f);
 
                 savedDefaults++;
@@ -108,7 +127,6 @@ public class ConfigUtil {
 
         if (savedDefaults > 0) {
             plugin.saveConfig();
-            plugin.reloadConfig();
 
             plugin.sendConsole("<green>Successfully loaded " + savedDefaults + " default sound(s).</green>");
         }

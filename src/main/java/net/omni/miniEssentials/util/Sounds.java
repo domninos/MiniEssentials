@@ -25,11 +25,15 @@ public enum Sounds {
     public void loadSound(FileConfiguration config, Logger logger) {
         Key fallback = Key.key(this.defaultVal);
 
-        String sound_name = config.getString(path + ".sound", fallback.asString());
+        String sound_name = config.getString(path + ".key", fallback.asString());
         float volume = (float) config.getDouble(path + ".volume", 0.4f);
         float pitch = (float) config.getDouble(path + ".pitch", 1f);
 
-        String formattedKey = sound_name.toLowerCase().trim().replace("_", ".");
+        String formattedKey = sound_name.toLowerCase().trim();
+
+        if (sound_name.equals(sound_name.toUpperCase()))
+            formattedKey = formattedKey.replace("_", ".");
+
         Key finalKey = fallback;
 
         try {
@@ -39,7 +43,7 @@ public enum Sounds {
             if (sound != null)
                 finalKey = Registry.SOUNDS.getKey(sound);
             else
-                logger.warning("No such sound found: " + formattedKey);
+                logger.warning("No sound found: " + formattedKey);
         } catch (IllegalArgumentException | InvalidKeyException e) {
             logger.warning("Invalid sound configuration for " + path);
         }
@@ -56,5 +60,9 @@ public enum Sounds {
 
     public String getPath() {
         return path;
+    }
+
+    public String getDefaultVal() {
+        return defaultVal;
     }
 }
