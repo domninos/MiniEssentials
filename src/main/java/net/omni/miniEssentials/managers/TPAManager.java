@@ -146,7 +146,7 @@ public class TPAManager {
 
         removeRequestFromPlayer(fromPlayer, toPlayer);
 
-        plugin.sendMessage(player, Messages.TPA_DENY.replace("palyer", targetPlayer.getName()));
+        plugin.sendMessage(player, Messages.TPA_DENY.replace("to_player", targetPlayer.getName()));
     }
 
     public void removeRequests(UUID player) {
