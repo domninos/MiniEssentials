@@ -28,8 +28,7 @@ public class InventoryEditManager {
         if (opener == null || target == null)
             return;
 
-        // TODO config title
-        Component title = Component.text("Viewing: " + target.getName() + "'s Inventory");
+        Component title = MessageUtil.parse(plugin.getConfigUtil().getOpenInvTitle(target.getName()));
         Inventory inv = Bukkit.createInventory(null, 54, title);
 
         fillInventory(inv, target.getInventory());
@@ -41,8 +40,7 @@ public class InventoryEditManager {
         inv.setItem(48, target.getInventory().getBoots());
         inv.setItem(49, target.getInventory().getItemInOffHand());
 
-        // TODO config title unused slots / panes
-        ItemStack lockedPane = createNamedPane(Material.RED_STAINED_GLASS_PANE, "<red>Unused Slot</red>");
+        ItemStack lockedPane = createNamedPane(plugin.getConfigUtil().getUnusedPaneMaterial(), plugin.getConfigUtil().getUnusedPaneDisplayName());
         for (int i = 50; i < 54; i++)
             inv.setItem(i, lockedPane);
 
@@ -55,12 +53,11 @@ public class InventoryEditManager {
         for (int i = 0; i < 36; i++)
             inv.setItem(i, targetInv.getItem(i));
 
-        // TODO config title unused slots / panes
-        inv.setItem(36, createNamedPane(Material.GRAY_STAINED_GLASS_PANE, "<yellow>↓ Helmet Slot ↓</yellow>"));
-        inv.setItem(37, createNamedPane(Material.GRAY_STAINED_GLASS_PANE, "<yellow>↓ Chestplate Slot ↓</yellow>"));
-        inv.setItem(38, createNamedPane(Material.GRAY_STAINED_GLASS_PANE, "<yellow>↓ Leggings Slot ↓</yellow>"));
-        inv.setItem(39, createNamedPane(Material.GRAY_STAINED_GLASS_PANE, "<yellow>↓ Boots Slot ↓</yellow>"));
-        inv.setItem(40, createNamedPane(Material.GRAY_STAINED_GLASS_PANE, "<yellow>↓ Off-Hand Slot ↓</yellow>"));
+        inv.setItem(36, createNamedPane(plugin.getConfigUtil().getArmorPaneMaterial(), plugin.getConfigUtil().getArmorPaneDisplayName("Helmet")));
+        inv.setItem(37, createNamedPane(plugin.getConfigUtil().getArmorPaneMaterial(), plugin.getConfigUtil().getArmorPaneDisplayName("Chestplate")));
+        inv.setItem(38, createNamedPane(plugin.getConfigUtil().getArmorPaneMaterial(), plugin.getConfigUtil().getArmorPaneDisplayName("Leggings")));
+        inv.setItem(39, createNamedPane(plugin.getConfigUtil().getArmorPaneMaterial(), plugin.getConfigUtil().getArmorPaneDisplayName("Boots")));
+        inv.setItem(40, createNamedPane(plugin.getConfigUtil().getArmorPaneMaterial(), plugin.getConfigUtil().getArmorPaneDisplayName("Off-Hand")));
 
         ItemStack defaultFiller = createNamedPane(Material.GRAY_STAINED_GLASS_PANE, " ");
 

@@ -38,11 +38,10 @@ public class MinieCommand implements CommandExecutor {
                     return true;
                 }
 
-                plugin.reloadConfig();
-
+                plugin.getConfigUtil().reloadConfig();
                 plugin.getMessagesManager().loadMessages();
-                plugin.sendMessage(sender, "<green>config.yml and messages.yml have been reloaded.</green>");
 
+                plugin.sendMessage(sender, "<green>config.yml and messages.yml have been reloaded.</green>");
             } else if (args[0].equalsIgnoreCase("about"))
                 sender.sendMessage(MessageUtil.parse(getAboutText()));
             else if (args[0].equalsIgnoreCase("help"))

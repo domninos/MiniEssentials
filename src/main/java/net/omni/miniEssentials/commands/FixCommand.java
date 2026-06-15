@@ -2,8 +2,8 @@ package net.omni.miniEssentials.commands;
 
 import net.omni.miniEssentials.MiniEssentials;
 import net.omni.miniEssentials.util.Messages;
+import net.omni.miniEssentials.util.Sounds;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -40,6 +40,7 @@ public class FixCommand implements CommandExecutor {
         ItemStack currentHand = player.getInventory().getItemInMainHand();
 
         if (currentHand.getType() == Material.AIR || !(currentHand.getItemMeta() instanceof Damageable damageable)) {
+            player.playSound(Sounds.FIX_ERROR.getSound());
             plugin.sendMessage(player, Messages.FIX_ERROR.toString());
             return true;
         }
@@ -50,9 +51,7 @@ public class FixCommand implements CommandExecutor {
 
         player.updateInventory();
 
-        // TODO config
-        player.playSound(player, Sound.BLOCK_ANVIL_USE, 0.4f, 1f);
-
+        player.playSound(Sounds.FIX_SUCCESS.getSound());
         plugin.sendMessage(player, Messages.FIX_SUCCESS.toString());
         return true;
     }

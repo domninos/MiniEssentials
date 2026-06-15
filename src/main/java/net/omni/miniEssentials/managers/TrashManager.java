@@ -1,5 +1,6 @@
 package net.omni.miniEssentials.managers;
 
+import net.omni.miniEssentials.MiniEssentials;
 import net.omni.miniEssentials.util.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -14,6 +15,12 @@ import java.util.UUID;
 public class TrashManager {
     private final Map<UUID, Inventory> trashInventories = new HashMap<>();
 
+    private final MiniEssentials plugin;
+
+    public TrashManager(MiniEssentials plugin) {
+        this.plugin = plugin;
+    }
+
     public void openTrashInventory(Player player) {
         UUID uuid = player.getUniqueId();
 
@@ -23,13 +30,11 @@ public class TrashManager {
     }
 
     public Inventory loadTrashInventory() {
-        // TODO size, name
-
         TrashInventoryHolder holder = new TrashInventoryHolder();
 
-        Inventory trashInventory = Bukkit.createInventory(holder, 54, MessageUtil.parse("Trash Manager"));
+        Inventory trashInventory = Bukkit.createInventory(holder, plugin.getConfigUtil().getTrashInvSize(),
+                MessageUtil.parse(plugin.getConfigUtil().getTrashInvTitle()));
 
-        // TODO mesages.yml
         holder.setTrashInventory(trashInventory);
 
         return trashInventory;

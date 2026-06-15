@@ -5,6 +5,7 @@ import net.omni.miniEssentials.commands.*;
 import net.omni.miniEssentials.listener.OpenInvListener;
 import net.omni.miniEssentials.listener.PlayerListener;
 import net.omni.miniEssentials.managers.*;
+import net.omni.miniEssentials.util.ConfigUtil;
 import net.omni.miniEssentials.util.MessageUtil;
 import net.omni.miniEssentials.util.MiniConfig;
 import org.bukkit.Bukkit;
@@ -13,8 +14,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MiniEssentials extends JavaPlugin {
 
-    // TODO messages.yml
-
     private GodManager godManager;
     private TPAManager tpaManager;
     private TrashManager trashManager;
@@ -22,6 +21,8 @@ public final class MiniEssentials extends JavaPlugin {
 
     private MiniConfig messagesConfig;
     private MessagesManager messagesManager;
+
+    private ConfigUtil configUtil;
 
     @Override
     public void onDisable() {
@@ -39,13 +40,16 @@ public final class MiniEssentials extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
+        this.configUtil = new ConfigUtil(this);
+        configUtil.loadConfig();
+
         this.messagesConfig = new MiniConfig(this, "messages.yml");
         this.messagesManager = new MessagesManager(this);
         messagesManager.loadMessages();
 
         this.godManager = new GodManager(this);
         this.tpaManager = new TPAManager(this);
-        this.trashManager = new TrashManager();
+        this.trashManager = new TrashManager(this);
         this.inventoryEditManager = new InventoryEditManager(this);
 
         trashManager.loadTrashInventory();
@@ -116,5 +120,9 @@ public final class MiniEssentials extends JavaPlugin {
 
     public MessagesManager getMessagesManager() {
         return messagesManager;
+    }
+
+    public ConfigUtil getConfigUtil() {
+        return configUtil;
     }
 }

@@ -51,7 +51,6 @@ public class TPAManager {
 
         plugin.sendMessage(targetPlayer, Messages.TPA_REQUEST_TO.replaceList("from_player", player.getName()), false);
 
-        // TODO messages.yml
         plugin.sendMessage(player, Messages.TPA_REQUEST_FROM.replace("to_player", targetPlayer.getName()));
 
         tpaTasks.put(fromPlayer, Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -66,9 +65,9 @@ public class TPAManager {
 
             if (player.isOnline() && targetPlayer.isOnline())
                 plugin.sendMessage(player, Messages.TPA_REQUEST_EXPIRED.replace("to_player", targetPlayer.getName()));
-        }, 20 * 30)); // TODO config - default: 30 seconds
+        }, 20L * plugin.getConfigUtil().getTPACooldown()));
 
-        tpaCooldowns.put(fromPlayer, System.currentTimeMillis() + (30 * 1000)); // TODO config
+        tpaCooldowns.put(fromPlayer, System.currentTimeMillis() + (plugin.getConfigUtil().getTPACooldown() * 1000L));
 
         tpaRequests.compute(toPlayer, (_, requests) -> {
             if (requests == null)

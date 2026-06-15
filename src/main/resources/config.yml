@@ -1,0 +1,29 @@
+sounds:
+  fix_success:
+    key: block.anvil.use
+    volume: 0.4
+    pitch: 1
+  fix_error:
+    key: block.anvil.break
+    volume: 0.4
+    pitch: 1
+  trashed:
+    key: block.bamboo_wood.break
+    volume: 0.5
+    pitch: 1
+
+tpa:
+  cooldown: 30 # in seconds | default - 30
+
+open_inv:
+  title: "<yellow>Viewing: %player%'s Inventory</yellow>"
+  unused_pane:
+    material: RED_STAINED_GLASS_PANE
+    display_name: "<red>Unused slot</red>"
+  armor_pane:
+    material: GRAY_STAINED_GLASS_PANE
+    display_name: "<yellow>↓ %armor% Slot ↓</yellow>"
+
+trash_inv:
+  size: 27 # should be multiple of 9
+  title: "<green>Trash Manager</green>"

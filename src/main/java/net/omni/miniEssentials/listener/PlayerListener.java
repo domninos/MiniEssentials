@@ -2,9 +2,9 @@ package net.omni.miniEssentials.listener;
 
 import net.omni.miniEssentials.MiniEssentials;
 import net.omni.miniEssentials.util.Messages;
+import net.omni.miniEssentials.util.Sounds;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -77,10 +77,8 @@ public class PlayerListener implements Listener {
         if (amount == 0)
             return;
 
+        player.playSound(Sounds.TRASHED.getSound());
         plugin.sendMessage(player, Messages.TRASHED_SUCCESS.replace("amount", String.valueOf(amount)));
-
-        // TODO playSound - config
-        player.playSound(player, Sound.BLOCK_BAMBOO_WOOD_BREAK, 0.5f, 1f);
 
         inv.clear();
     }
